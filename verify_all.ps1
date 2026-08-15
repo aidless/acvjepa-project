@@ -186,6 +186,44 @@ Run-Check 'm2.video_to_windows' @('video_to_windows.py','--video-dir',$bClips,'-
 Run-Check 'm2.assemble_dataset' @('assemble_m2_dataset.py','--repo',$root,'--output',(Join-Path $root 'verify_artifacts/m2_assembly'),'--simulator','synthetic','--video-dir',$bClips,'--height','64','--width','96') -TimeoutSec 300
 Remove-Item $bClips -Recurse -Force -ErrorAction SilentlyContinue
 
+# --- J. P1 domain-adaptation training (frozen HF backbone, no-action loss) -----------
+# Uses the same real V-JEPA weights as H (SKIP when absent). Builds small 384px
+# B-layer windows from synthetic clips, then runs train_p1_domain_adapt 1 epoch
+# (single proc, CPU) and checks the checkpoint landed. event_term must be 0.0.
+if (Test-Path $hfCkpt) {
+    $env:USE_LIBUV = '0'
+    $env:CUDA_VISIBLE_DEVICES = '-1'
+    $env:PYTORCH_NO_CUDA = '1'
+    $env:RANK = '0'
+    $env:LOCAL_RANK = '0'
+    $env:WORLD_SIZE = '1'
+    $env:MASTER_ADDR = '127.0.0.1'
+    $env:MASTER_PORT = '29711'
+    $p1Clips = Join-Path $root 'verify_artifacts/p1_clips'
+    $p1Win = Join-Path $root 'verify_artifacts/p1_windows'
+    $p1Out = Join-Path $root 'verify_artifacts/p1_out'
+    Run-Check 'p1.make_clips' @((Join-Path $root 'scripts/make_synthetic_clips.py'),$p1Clips) -TimeoutSec 120
+    Run-Check 'p1.video_to_windows_384' @('video_to_windows.py','--video-dir',$p1Clips,'--output',$p1Win,'--context-steps','2','--horizon','2','--height','384','--width','384') -TimeoutSec 300
+    $p1Manifest = Join-Path $p1Win 'domain_adapt_windows.jsonl'
+    if (Test-Path $p1Manifest) {
+        Run-Check 'p1.train_domain_adapt_1proc' @('train_p1_domain_adapt.py','--manifest',$p1Manifest,'--output',$p1Out,'--epochs','1','--per-rank-batch-size','1','--gradient-accumulation','1','--num-workers','0','--init-from',"vjepa2hf:${hfCkpt}:frozen",'--init-img-size','384','--latent-dim','64','--max-horizon','2','--save-interval-steps','5','--log-interval-steps','1') -TimeoutSec 900
+        $p1Last = Join-Path $p1Out 'p1-last.pt'
+        if (Test-Path $p1Last) {
+            "PASS`tp1.checkpoint_saved`tp1-last.pt exists" | Add-Content $summary -Encoding UTF8
+            Write-Host "[PASS] p1.checkpoint_saved"
+        } else {
+            "FAIL`tp1.checkpoint_saved`tp1-last.pt missing" | Add-Content $summary -Encoding UTF8
+            Write-Host "[FAIL] p1.checkpoint_saved (missing)"
+        }
+        Remove-Item $p1Out -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Remove-Item $p1Clips,$p1Win -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item Env:RANK,Env:LOCAL_RANK,Env:WORLD_SIZE,Env:MASTER_ADDR,Env:MASTER_PORT -ErrorAction SilentlyContinue
+} else {
+    "SKIP`tp1.*`tweights not present: $hfCkpt" | Add-Content $summary -Encoding UTF8
+    Write-Host "[SKIP] p1.* (weights missing)"
+}
+
 Write-Host ''
 Write-Host '=== SUMMARY ==='
 Get-Content $summary

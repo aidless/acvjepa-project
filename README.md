@@ -77,6 +77,7 @@ torchrun --standalone --nproc_per_node=2 test_dynamic_nccl_full_state_equivalenc
 | `DATA_MANIFEST.md` | 四层数据金字塔清单（A 官方权重 / B 本地视频 / C RoboCasa / D 真实轨迹） |
 | `vjepa_backbone.py` + `vjepa_backbone_smoke.py` | **M1 交付**：官方 V-JEPA 2 权重适配器（frozen/last_k/lora/finetune）+ 冒烟 |
 | `robocasa_adapter.py` / `video_to_windows.py` / `assemble_m2_dataset.py` | **M2 数据装配**：RoboCasa 采集适配器 / B 层视频切窗 / 端到端装配（portable synthetic 可验证） |
+| `train_p1_domain_adapt.py` | **P1 域适配训练**：冻结官方 V-JEPA 骨干 + 无动作/无事件损失（B 层窗口） |
 | `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 当前状态 / 待办分级 / 验证结果 |
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `C9_AMI_JEPA_更新核验_2026-08-15.md` | AMI/JEPA 最新动态核验（ICML 2026 等） |
