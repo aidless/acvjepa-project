@@ -1,0 +1,19 @@
+# Runtime requirements for the AC-VJEPA / LeCun-JEPA project (takeover, 2026-08-15)
+# Verified on: Python 3.12.7, Windows 11, 1x RTX 3060 Laptop 6GB (CPU-mode for smokes)
+# Install:  python -m pip install -r requirements.txt
+
+# --- core deep learning ---
+torch==2.5.1+cu121            # or a CPU-only build; Windows wheels lack libuv -> torchrun needs USE_LIBUV=0
+numpy==2.5.1
+
+# --- config / crypto / observability ---
+PyYAML==6.0.3
+cryptography==50.0.0          # Ed25519 HITL ledger
+prometheus-client==0.26.0     # distributed_training_observability.py
+
+# --- optional runtime backends ---
+onnxruntime==1.28.0           # edge_ac_vjepa_ort.py / export_ac_vjepa_onnx.py
+
+# --- tooling (not required by project code) ---
+# pytest==8.3.4               # broken on this host: global deepeval plugin conflict; use `python -m unittest`
+# python-pptx                 # only for slide_content verification (A5)

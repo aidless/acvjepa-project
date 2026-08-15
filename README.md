@@ -74,11 +74,14 @@ torchrun --standalone --nproc_per_node=2 test_dynamic_nccl_full_state_equivalenc
 | `Kubernetes 生产监控阈值与 Rendezvous—GitOps 并发仲裁手册.md` | 生产仲裁 |
 | `决策记录.md` | 全部决策与未决影响 |
 | `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 当前状态 / 待办分级 / 验证结果 |
+| `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
+| `C9_AMI_JEPA_更新核验_2026-08-15.md` | AMI/JEPA 最新动态核验（ICML 2026 等） |
 
 ## 验证基线与待办
 
-- 验证结果与逐项证据见 `VERIFY_RESULTS.md`（由 `verify_all.ps1` 重跑可刷新）。
-- 未决事项按「本机可做 / 需真实集群硬件 / 需外部系统审批」三级见 `BACKLOG.md`。
+- 验证结果与逐项证据见 `VERIFY_RESULTS.md`（由 `verify_all.ps1` 重跑可刷新）。**当前基线：42/42 全绿**（单元测试 5、独立冒烟 22、配置校验 6、Gloo 双进程 4、容器/契约 4+1）。
+- Gloo 双进程回归在本机使用 `scripts/manual_gloo_runner.py`（torchrun 的 elastic agent 会触发本机页文件限制）。
+- 未决事项按「本机可做 / 需真实集群硬件 / 需外部系统审批」三级见 `BACKLOG.md`；B 级项的执行步骤见 `CLUSTER_VALIDATION_RUNBOOK.md`。
 
 ## 原始交付包与完整性
 

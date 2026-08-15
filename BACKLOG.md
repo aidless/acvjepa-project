@@ -7,30 +7,30 @@
 
 | # | 事项 | 来源决策 | 状态 | 备注 |
 |---|---|---|---|---|
-| A1 | 补装缺失依赖并固化环境（requirements.txt / pip freeze） | 接管勘察 | done | prometheus-client 已补装；建议导出 `requirements.txt` 入库 |
+| A1 | 补装缺失依赖并固化环境（requirements.txt / pip freeze） | 接管勘察 | done | prometheus-client 已补装；`requirements.txt` 已入库（A6） |
 | A2 | 修复 zip 中 `:`/`/` 非法文件名并物化工作副本 | 接管决策 | done | `2_1`/`CI-CD`/`RDMA_rail` |
-| A3 | 建立可重跑验证基线（verify_all.ps1 → VERIFY_RESULTS.md） | 接管决策 | in_progress | 结果见 VERIFY_RESULTS.md |
-| A4 | Docker Compose 本地演练实跑（`docker-compose.local-chaos.yml` up/down） | 存储损坏回退手册；决策「本地 Compose」条 | open | daemon 可用时执行；当前仅静态 config |
-| A5 | PPTX 与 `slide_content.md` 一致性核对（页数/要点/来源） | 阶段一交付审计 | open | 可用 deepseek-eyes 或直接比对 |
-| A6 | 统一 `requirements.txt` + 运行说明入库 | A1 | open | 便于复现 |
-| A7 | `_extras/SKILL.md`（无关 imagegen 技能）处理确认：删除 or 保留归档 | 接管勘察 | open | 默认保留归档，待用户确认 |
+| A3 | 建立可重跑验证基线（verify_all.ps1 → VERIFY_RESULTS.md） | 接管决策 | done | **42/42 全绿**（2026-08-15 最终） |
+| A4 | Docker Compose 本地演练实跑（build→up→chaos-ci profile→down 全流程） | 存储损坏回退手册；决策「本地 Compose」条 | done | 3 容器 Healthy；chaos-ci 容器内跑离线契约成功；修复 .github 缺失 SKIP 语义 |
+| A5 | PPTX 与 `slide_content.md` 一致性核对（页数/要点/来源） | 阶段一交付审计 | done | 12 页↔12 区块对齐，关键事实全过（`verify_artifacts/ppt_audit_report.json`） |
+| A6 | 统一 `requirements.txt` + 运行说明入库 | A1 | done | 已入库 |
+| A7 | `_extras/SKILL.md`（无关 imagegen 技能）处理确认：删除 or 保留归档 | 接管勘察 | done | 保留归档（`_extras/SKILL.md`），README 已注明无关性，不影响项目 |
 | A8 | **Windows 兼容修复回归**：`file://` URI 解析（elastic_data_cursor_ledger / multimodal ledger / generate_pointcloud_pairs）、SQLite 句柄关闭（chaos framework）、np.load 句柄（pointcloud 测试）、hitl 演示幂等 | 接管验证发现 | done | 原交付在 Linux 验证；本机 Windows 需这些修复（决策记录已记） |
 | A9 | **还原被 zip 压平的目录结构**（monitoring/、docker/、k8s/chaos-lab/、.github/workflows/、scripts/） | 接管验证发现（validate_* 与 compose 按原始布局断言） | done | validate_* 从 FAIL 转 PASS |
-| A10 | torchrun Gloo 双进程语义回归在本机不可行（torch 2.5.1 Windows wheel 无 libuv → `USE_LIBUV=0` 可绕过 store 错误，但双进程 commit 内存超限 WinError 1455） | 接管验证 | blocked(env) | 需内存充足/非沙箱环境或 Linux 复跑 |
+| A10 | Gloo 双进程语义回归在本机可跑（经 `scripts/manual_gloo_runner.py` 绕开 torchrun elastic agent 页文件限制） | 接管验证 | done | 4/4 通过：train/topology/full_state(118+118)/integration |
 
 ## B. 需真实集群 / 硬件（本机 BLOCKED）
 
 | # | 事项 | 来源决策 | 状态 | 前置条件 |
 |---|---|---|---|---|
-| B1 | 真实 NCCL 集群压测：拓扑基线→微基准→应用级动态计划→受控故障恢复；建立 GB/s 阈值 | NCCL 真实集群压测手册；决策「真实集群压测」条 | blocked | 隔离 GPU 集群（≥2 节点），torchrun elastic |
-| B2 | RDMA/rail 故障演练（分区、rendezvous、rail 失效） | RDMA/rail 守卫；决策「RDMA/rail」条 | blocked | 专用 VLAN/节点池 + 双人审批 + TTL 窗口 |
-| B3 | 生产监控阈值校准（0.85/5s/900s 等初始保护栏） | 生产阈值手册；决策「生产监控」条 | blocked | 真实 cluster/job 基线 + SLO |
-| B4 | FP8 metadata / FP16 GradScaler / CUDA RNG / FSDP-ZeRO shard 扩展验证 | 混合精度恢复手册 | blocked | 目标 GPU + Transformer Engine backend |
-| B5 | Gloo 验证升级为 GPU 全状态对比（AMP/TF32/lossy comm hook 独立阈值） | 决策「Gloo 边界」条 | blocked | GPU 多卡环境 |
-| B6 | K8s 隔离 Job 混沌演练（immutable manifest 实际 apply） | K8s 混沌契约；决策「K8s CI」条 | blocked | 独立集群 + admission policy + GitOps 身份 |
-| B7 | torchrun 故障恢复演练：checkpoint 提交协议与数据游标真实作业验证 | 决策「worker-group 重建」条 | blocked | 真实调度器 + 共享存储 |
-| B8 | 大规模抢占分波恢复参数校准（wave/concurrency） | 快速重建手册 | blocked | rendezvous/对象存储/网络压测 |
-| B9 | checkpoint 三层缓存（KV pointer/RDMA shard/verified cache）目标硬件验证 | 决策「checkpoint 加速」条 | blocked | 目标 KV/对象存储/RDMA/rail 访问隔离 |
+| B1 | 真实 NCCL 集群压测：拓扑基线→微基准→应用级动态计划→受控故障恢复；建立 GB/s 阈值 | NCCL 真实集群压测手册；决策「真实集群压测」条 | blocked（执行清单已产出） | 隔离 GPU 集群（≥2 节点），torchrun elastic；步骤见 `CLUSTER_VALIDATION_RUNBOOK.md` B1 |
+| B2 | RDMA/rail 故障演练（分区、rendezvous、rail 失效） | RDMA/rail 守卫；决策「RDMA/rail」条 | blocked（执行清单已产出） | 专用 VLAN/节点池 + 双人审批 + TTL 窗口；见 RUNBOOK B2 |
+| B3 | 生产监控阈值校准（0.85/5s/900s 等初始保护栏） | 生产阈值手册；决策「生产监控」条 | blocked（执行清单已产出） | 真实 cluster/job 基线 + SLO；见 RUNBOOK B3 |
+| B4 | FP8 metadata / FP16 GradScaler / CUDA RNG / FSDP-ZeRO shard 扩展验证 | 混合精度恢复手册 | blocked（执行清单已产出） | 目标 GPU + Transformer Engine backend；见 RUNBOOK B4 |
+| B5 | Gloo 验证升级为 GPU 全状态对比（AMP/TF32/lossy comm hook 独立阈值） | 决策「Gloo 边界」条 | blocked（执行清单已产出） | GPU 多卡环境；见 RUNBOOK B5 |
+| B6 | K8s 隔离 Job 混沌演练（immutable manifest 实际 apply） | K8s 混沌契约；决策「K8s CI」条 | blocked（执行清单已产出） | 独立集群 + admission policy + GitOps 身份；见 RUNBOOK B6 |
+| B7 | torchrun 故障恢复演练：checkpoint 提交协议与数据游标真实作业验证 | 决策「worker-group 重建」条 | blocked（执行清单已产出） | 真实调度器 + 共享存储；见 RUNBOOK B7 |
+| B8 | 大规模抢占分波恢复参数校准（wave/concurrency） | 快速重建手册 | blocked（执行清单已产出） | rendezvous/对象存储/网络压测；见 RUNBOOK B8 |
+| B9 | checkpoint 三层缓存（KV pointer/RDMA shard/verified cache）目标硬件验证 | 决策「checkpoint 加速」条 | blocked（执行清单已产出） | 目标 KV/对象存储/RDMA/rail 访问隔离；见 RUNBOOK B9 |
 
 ## C. 需外部系统 / 审批 / 部署环境
 
@@ -44,7 +44,7 @@
 | C6 | 严格 exactly-once 样本消费的事务性数据游标 | 决策「数据一致性」条 | blocked | 外部事务性数据系统 |
 | C7 | 数据治理：训练评测、影子模式、灰度发布门控（HITL 资格≠自动训练） | 决策「HITL 双重审核」条 | blocked | 数据/发布平台 |
 | C8 | 目标机器人实机：时延 p99/抖动/故障注入/影子验收（`AC-V-JEPA 双臂部署：实机时延与控制频率验收协议.md`） | AC-V-JEPA 验收协议 | blocked | 双臂硬件 + 受控场地 |
-| C9 | AMI/JEPA 路线最新动态（2026-08-14 之后）更新核验 | 阶段一报告 | open | web 检索 + 一手来源复核 |
+| C9 | AMI/JEPA 路线最新动态（2026-08-14 之后）更新核验 | 阶段一报告 | done | 已产出 `C9_AMI_JEPA_更新核验_2026-08-15.md`：ICML 2026 冯雁特邀演讲、AMI 拒绝 AGI 标签聚焦机器人世界模型、SBVA €30M 等后续投资、中国 JEPA 具身热度；原交付结论全部维持 |
 
 ## 记录规范
 

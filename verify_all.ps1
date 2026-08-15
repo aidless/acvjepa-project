@@ -100,11 +100,11 @@ Run-Check 'validate.kubernetes_chaos_ci' @('validate_kubernetes_chaos_ci.py')
 Run-Check 'validate.failpoint_ci_config' @('validate_failpoint_ci_config.py')
 Run-Check 'validate.update_production_dashboard' @('update_production_dashboard.py')
 
-# --- E. torchrun / Gloo CPU multi-process (best effort on Windows) ------------------
-# torch 2.5.1 Windows wheels lack libuv support, so USE_LIBUV=0 is required for the
-# C10d rendezvous store; CUDA is disabled because these are CPU semantic regressions.
-# Note: two spawned torch processes need ~4-6 GB commit; if this machine is under
-# memory pressure they may fail with WinError 1455 -> recorded as FAIL/BLOCKED.
+# --- E. Gloo CPU multi-process semantic regression (manual 2-proc runner) -----------
+# torchrun's elastic agent holds an extra full torch import -> WinError 1455 (pagefile)
+# on this machine. scripts/manual_gloo_runner.py spawns two plain python processes
+# (RANK/WORLD_SIZE env, gloo backend, USE_LIBUV=0 for the Windows wheel), which fits
+# in the available commit budget. Same two-process semantic regression as on Linux.
 $env:USE_LIBUV = '0'
 $env:CUDA_VISIBLE_DEVICES = '-1'
 $env:PYTORCH_NO_CUDA = '1'
@@ -112,10 +112,10 @@ $demoOut = 'verify_artifacts/demo_ddp_data'
 Run-Check 'ddp.make_demo_data' @('make_demo_ddp_data.py') 
 $manifest = 'F:\home\ubuntu\lecun_analysis\demo_ddp_data\manifest.jsonl'
 if (Test-Path $manifest) {
-    Run-Check 'ddp.train_ac_vjepa_gloo_2proc' @('--standalone','--nproc_per_node=2','--master-addr','127.0.0.1','--master-port','29560','train_ac_vjepa_ddp.py','--manifest',$manifest,'--output','verify_artifacts/ddp_train_out','--epochs','1','--gradient-accumulation','1') -TimeoutSec 600 -FilePath 'torchrun'
-    Run-Check 'ddp.topology_aware_update_plan_2proc' @('--standalone','--nproc_per_node=2','--master-addr','127.0.0.1','--master-port','29561','topology_aware_update_plan.py','--smoke-test') -TimeoutSec 600 -FilePath 'torchrun'
-    Run-Check 'ddp.test_dynamic_nccl_full_state_equivalence' @('--standalone','--nproc_per_node=2','--master-addr','127.0.0.1','--master-port','29562','test_dynamic_nccl_full_state_equivalence.py') -TimeoutSec 600 -FilePath 'torchrun'
-    Run-Check 'ddp.test_dynamic_nccl_acvjepa_integration' @('--standalone','--nproc_per_node=2','--master-addr','127.0.0.1','--master-port','29563','test_dynamic_nccl_acvjepa_integration.py') -TimeoutSec 600 -FilePath 'torchrun'
+    Run-Check 'ddp.train_ac_vjepa_gloo_2proc' @('scripts/manual_gloo_runner.py','train_ac_vjepa_ddp.py','--manifest',$manifest,'--output','verify_artifacts/ddp_train_out','--epochs','1','--gradient-accumulation','1') -TimeoutSec 600
+    Run-Check 'ddp.topology_aware_update_plan_2proc' @('scripts/manual_gloo_runner.py','topology_aware_update_plan.py','--smoke-test') -TimeoutSec 600
+    Run-Check 'ddp.test_dynamic_nccl_full_state_equivalence' @('scripts/manual_gloo_runner.py','test_dynamic_nccl_full_state_equivalence.py') -TimeoutSec 600
+    Run-Check 'ddp.test_dynamic_nccl_acvjepa_integration' @('scripts/manual_gloo_runner.py','test_dynamic_nccl_acvjepa_integration.py') -TimeoutSec 600
 } else {
     "SKIP`tddp.*`tmanifest not produced (demo data path differs on Windows)" | Add-Content $summary -Encoding UTF8
     Write-Host "[SKIP] ddp.* (manifest missing: $manifest)"
