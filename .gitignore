@@ -7,3 +7,5 @@ verify_artifacts/
 *.egg-info/
 .pytest_cache/
 artifacts-compose/
+
+weights/

@@ -122,9 +122,50 @@ def check_install_step() -> None:
     print("  install + one train step OK (lora adapters trained, EMA swapped)")
 
 
+def check_real_hf(safetensors_path: Path, latent_dim: int = 64) -> None:
+    """Load the real V-JEPA 2.1 ViT-B safetensors through transformers and
+    verify the frame_encoder contract with a single 384px frame."""
+    from vjepa_backbone import HFVJEPA2Backbone, install_hf_vjepa2_encoder
+
+    print("  loading real HF V-JEPA 2.1 ViT-B weights (384px, ~418MB)...")
+    backbone = HFVJEPA2Backbone(
+        model_id="davevanveen/vjepa2.1-vitb-fpc64-384",
+        ckpt_path=str(safetensors_path),
+        latent_dim=latent_dim,
+        mode="frozen",
+    )
+    rep = backbone.load_report
+    print(f"  load report: loaded={rep.loaded} skipped={rep.skipped} strict_ok={rep.strict_ok}")
+    assert rep.loaded >= 390, "encoder keys should be fully covered"
+    frame = torch.randn(1, 3, 384, 384)
+    with torch.no_grad():
+        out = backbone(frame)
+    print(f"  forward contract OK: [1,3,384,384] -> {tuple(out.shape)} (latent_dim={latent_dim})")
+    assert out.shape == (1, latent_dim)
+
+    # install into ActionConditionedVJEPA and run one EMA-updated step at 384px
+    torch.manual_seed(7)
+    model = ActionConditionedVJEPA(
+        image_channels=3, proprio_dim=8, action_dim=4,
+        latent_dim=latent_dim, event_dim=2, max_horizon=3,
+    )
+    rep2 = install_hf_vjepa2_encoder(model, latent_dim=latent_dim, ckpt_path=str(safetensors_path), mode="frozen")
+    optim = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=1e-3)
+    model.train()
+    cv = torch.randn(1, 2, 3, 384, 384); cp = torch.randn(1, 2, 8)
+    fv = torch.randn(1, 2, 3, 384, 384); fp = torch.randn(1, 2, 8)
+    act = torch.randn(1, 2, 4); ev = torch.randint(0, 2, (1, 2, 2)).float()
+    pred = model.predict(cv, cp, act)
+    tgt = model.target_latents(fv, fp)
+    losses = action_conditioned_jepa_loss(pred, tgt, ev)
+    losses.total.backward(); optim.step(); model.update_ema_target()
+    print("  real HF install + EMA train step OK")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", help="optional official V-JEPA checkpoint (pt)")
+    parser.add_argument("--safetensors", help="path to the HF-format model.safetensors (real V-JEPA 2.1)")
     parser.add_argument("--img-size", type=int, default=224)
     args = parser.parse_args()
 
@@ -134,7 +175,12 @@ def main() -> None:
     check_modes(backbone)
     check_key_remap()
 
-    if args.checkpoint:
+    if args.safetensors:
+        st_path = Path(args.safetensors)
+        if not st_path.is_file():
+            print(f"  safetensors not found: {st_path}"); sys.exit(2)
+        check_real_hf(st_path)
+    elif args.checkpoint:
         ckpt_path = Path(args.checkpoint)
         if not ckpt_path.is_file():
             print(f"  checkpoint not found: {ckpt_path}"); sys.exit(2)
@@ -145,7 +191,7 @@ def main() -> None:
         print(f"  real checkpoint: loaded={report.loaded} skipped={report.skipped} strict_ok={report.strict_ok}")
         print(f"  skipped sample: {report.skipped_keys[:5]}")
     else:
-        print("  (no --checkpoint: random-init structural path only)")
+        print("  (no --checkpoint/--safetensors: random-init structural path only)")
 
     check_install_step()
     print("== M1 smoke PASS ==")

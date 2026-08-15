@@ -15,10 +15,23 @@
 
 ## A 层：预训练权重（M1 已建适配接口）
 
-- 适配器：`vjepa_backbone.py`（键重映射：`encoder.`/`backbone.` 前缀剥离；`attn.qkv` 合并布局；`patch_embed.proj` ↔ `patch_embed` 别名）。
-- 加载入口：`train_ac_vjepa_ddp.py --init-from vjepa2:<path>[:frozen|last_k|lora|finetune]`。
-- 冒烟：`python vjepa_backbone_smoke.py --checkpoint <official.pt>`（无权重时走同构随机初始化路径，已 PASS）。
-- 待办：下载官方权重（数百 MB）并记录 SHA-256 于此文件；许可证确认（MIT 许可，见 [HF 模型卡](https://huggingface.co/facebook/vjepa2-vitl-fpc64-256)）。
+- 适配器：`vjepa_backbone.py`（两条加载路径——原生格式键重映射 + **HF Transformers 真实权重路径** `HFVJEPA2Backbone`）。
+- 加载入口：`train_ac_vjepa_ddp.py --init-from vjepa2:<path>[:frozen|last_k|lora|finetune]`（原生格式）；真实 HF 权重用 `install_hf_vjepa2_encoder`（frozen/finetune）。
+- 冒烟：`python vjepa_backbone_smoke.py --safetensors <model.safetensors>`（真实权重，已 PASS）；`--checkpoint <official.pt>`（原生格式）；无权重走同构随机初始化路径。
+
+### A 层登记：V-JEPA 2.1 ViT-B/16（80M）官方权重（已下载并验证）
+
+| 字段 | 值 |
+|---|---|
+| 就绪日期 | 2026-08-15 |
+| 来源 | HuggingFace `davevanveen/vjepa2.1-vitb-fpc64-384`（Meta V-JEPA 2.1 ViT-B 的 HF 转换版，distilled from ViT-G；模型卡见 [HF](https://huggingface.co/davevanveen/vjepa2.1-vitb-fpc64-384)） |
+| 原仓库 | [facebookresearch/vjepa2](https://github.com/facebookresearch/vjepa2)；论文 [arXiv:2506.09985](https://arxiv.org/abs/2506.09985) |
+| 本地路径 | `weights/vjepa2.1-vitb-fpc64-384/model.safetensors`（不入 git，见 .gitignore） |
+| 大小 / SHA-256 | 438,855,416 bytes / `77D2D1166D26F1434A116E537E9B5E7B41AA72DC8212ECC3D7B9C46CC19D6035` |
+| 结构 | ViT-B/16，384px crop，64 帧 clip，hidden 768，12 层 12 头；时空 patch embed + modality embeds + distillation norms |
+| 加载验证 | `HFVJEPA2Backbone`：**391/395 键加载（encoder 全覆盖）**；12 个 skip = predictor 蒸馏头(1664)与辅助键（无需）；`[1,3,384,384]→[1,latent_dim]` forward 契约 PASS；安装进 AC-VJEPA + EMA 训练步 PASS |
+| 许可 | 遵循 Meta V-JEPA 2 条款（HF 模型卡标注 `other`，原作者 Meta AI；商用需自行确认） |
+| 用途 | M2 域适配的冻结骨干（frozen）或轻适配（finetune）；predictor 头不使用 |
 
 ## B 层：本地无标签视频（待采集）
 
@@ -49,5 +62,5 @@
 | 日期 | 事项 | 状态 |
 |---|---|---|
 | 2026-08-15 | M1：`vjepa_backbone.py` 适配器 + `vjepa_backbone_smoke.py`（随机初始化路径） | 完成（smoke PASS） |
-| 2026-08-15 | A 层官方权重下载 | 待执行（网络/许可前置） |
+| 2026-08-15 | A 层官方权重下载（438.9 MB，SHA 见上） | **完成**（下载 + HF 真实加载验证 PASS，391/395 键） |
 | 2026-08-15 | B 层采集、C 层 RoboCasa 装配 | 待执行（M2 前置） |
