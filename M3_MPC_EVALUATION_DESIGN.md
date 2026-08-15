@@ -87,3 +87,9 @@
 **模型卡必填字段**：checkpoint 标识（路径 + SHA）、骨干模式（frozen/finetune/last_k/lora+rank）、latent_dim、投影头宽度、预测器时域 horizon、EMA 开关与 tau、动作条件训练数据分档版本（B/C 层版本 + 小时数）、训练 seed 与数据 split 版本、评测时参数冻结状态。
 
 **结果表模板**：行 = 任务模板 × 三基线；列 = 六指标 + 效应量（Cohen's h / Cliff's delta）+ 95% CI；逐 roll 原始结果入 artifact（与预注册口径同版本保存）。
+
+### 7.2 生态参照与储备（2026-08-15 WAM 学习批次，不改变冻结口径）
+
+- **评测底座候选**：`allenai/vla-evaluation-harness` 已集成 RoboCasa（待首复现）——M3 评测包可注册为其模型服务器集成（评测公共品化 + H-M1 外联）；统计层（ECE 分层 / Wilcoxon+Holm / 失败归因）仍自建（harness 只保证可复现）。
+- **设计储备（采纳须走预注册）**：INTACT 四接口受控对照（Direct/Guarded-A）把「搜索预算」作为评测变量；WorldRoamBench 逐帧/分段度量 → ECE 三分位**时间轴分解**（强化 H-T3「中途信心崩塌」检验）；「复现即验收」列（外部复现判定入结果表模板）；LeRobot 奖励模型 API 作自动成功判定（**必须先过 judge 校准门 FNR<0.15/FPR<0.10 再绑口径**）；stable-worldmodel CEM 栈作 A 组基线参考实现。
+- 本小节全部为储备级，**不改变 v1.1 已冻结的任何指标/检验/阈值**；采纳任何一项前在 `决策记录.md` 登记。

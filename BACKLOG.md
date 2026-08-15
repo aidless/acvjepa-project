@@ -28,6 +28,10 @@
 | A19 | H-T2/H-T4 消融预注册登记（本机 6GB 可执行：H-T2=头容量 32/64/128/256 分档、H-T4=EMA vs 同步目标 A/B） | HYPOTHESES H-T2/H-T4；BLUEPRINT §3/G2 | done | 预注册登记完成（决策记录 2026-08-15，HYPOTHESES 状态 → preregistered）；**执行**待用户解除「不跑实验」约束 |
 | A20 | H-M1 开源接力观察（观察窗 2026-08-15 → 2027-02-15） | HYPOTHESES H-M1；BLUEPRINT §3/G4 | in_progress | 预注册判据：≥1 名持 GPU 外部研究者 fork/PR 并执行 M3 评测（或同类）；fork/PR/issue 动态为辅助信号 |
 | A21 | C9 下一轮核验（2026-11-15 前后） | C9 跟踪机制；BLUEPRINT §3 | done | **提前轮（第二轮）+ 第三轮已执行**（2026-08-15 晚，用户指示）：见 C9 文档「第二轮/第三轮核验」小节；正式下一轮仍 2026-11-15（含三梯队终止率计数） |
+| A22 | vla-evaluation-harness 对接评估：M3 评测包注册 RoboCasa 集成的可行性 + 统计层边界（harness 只保证可复现，ECE 分层/检验/失败归因仍自建） | WAM 生态学习批次（2026-08-15） | open | 学习报告 §五；结论后置 done |
+| A23 | M3 设计借鉴储备（**不改冻结口径，采纳须走预注册**）：INTACT 四接口受控对照、ECE 时间轴分解（WorldRoamBench 度量）、复现即验收列、奖励模型判定器（过 judge 校准门）、stable-worldmodel A 基线参考 | WAM 生态学习批次 | open | 15 条精华模式 1–10/12；已落 M3 §7.2 注记 |
+| A24 | 生态清单补录与核对：`jepa_agent_project_findings.md` 补 INTACT/LeWorldModel/W2-VLA/worldmodels_ros2 + JEPA-WAM 10780 区分；核对清单闭环（VLA-JEPA ECCV/LICENSE、W2-VLA LICENSE、JEPA-WAM 零样本声称、vla-eval 榜单口径） | WAM 生态学习批次 | open | 学习报告 §三 核对清单 |
+| A25 | C9 核验新增「多种子稳定性」项（Seed Lottery 1/13 vs 0/21；上游 checkpoint ≥5 种子复现） | WAM 生态学习批次（2606.13856） | done | 检查清单已固化（2026-11-15 正式轮生效） |
 
 ## B. 需真实集群 / 硬件（本机 BLOCKED）
 

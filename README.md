@@ -72,6 +72,7 @@ python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
 | `M3_MPC_EVALUATION_DESIGN.md` | **M3 评测预注册（v1.1）**：P3 MPC 对比的基线/指标/统计/判定阈值 + 校准分层（H-T3）+ 失败归因（H-R1）+ 模型卡 |
 | `HYPOTHESES.md` | **猜想假设集**：五层 11 条细分假设（路线/技术/数据/生态/元层）+ 预注册流程 |
 | `BLUEPRINT.md` | **宏大蓝图**：十年推演总纲（纯思辨，无实验）——判定网络、A/B/C 分支树、X/Y/Z 终局、时间信号、决策门 |
+| `WAM生态学习报告_2026-08-15.md` | 外部生态学习（12 项仓库/论文）：VLA-JEPA/INTACT/LeWorldModel/vla-evaluation-harness/LeRobot/Seed Lottery 等 + 15 条精华模式与落地储备（A22–A25） |
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `决策记录.md` / `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 决策与未决影响 / 状态快照 / 待办分级 / 验证结果 |
 
