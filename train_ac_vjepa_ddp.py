@@ -89,6 +89,7 @@ class TrainConfig:
     init_from: Optional[str] = None
     init_lora_rank: int = 8
     init_unfreeze_last_k: int = 1
+    init_img_size: int = 384
 
 
 class WindowEpisodeDataset(Dataset[Dict[str, torch.Tensor]]):
@@ -256,10 +257,12 @@ def parse_args() -> TrainConfig:
     parser.add_argument(
         "--init-from",
         help=(
-            "incremental parent checkpoint, or 'vjepa2:<path>[:mode]' to load an "
-            "official V-JEPA 2 encoder as frozen backbone (mode: frozen|last_k|lora|finetune)"
+            "incremental parent checkpoint, or 'vjepa2:<path>[:mode]' (native-format "
+            "V-JEPA 2 encoder: frozen|last_k|lora|finetune) or 'vjepa2hf:<path>[:mode]' "
+            "(HuggingFace-format real V-JEPA 2.1 safetensors: frozen|finetune)"
         ),
     )
+    parser.add_argument("--init-img-size", type=int, default=384)
     parser.add_argument("--init-lora-rank", type=int, default=8)
     parser.add_argument("--init-unfreeze-last-k", type=int, default=1)
     parser.add_argument("--amp", action=argparse.BooleanOptionalAction, default=True)
@@ -285,6 +288,7 @@ def parse_args() -> TrainConfig:
         power_sgd_start_iter=args.power_sgd_start_iter,
         init_lora_rank=args.init_lora_rank,
         init_unfreeze_last_k=args.init_unfreeze_last_k,
+        init_img_size=args.init_img_size,
     )
 
 
@@ -312,37 +316,64 @@ def init_from_vjepa2(
     lora_rank: int = 8,
     unfreeze_last_k: int = 1,
     latent_dim: int = 128,
+    img_size: int = 384,
 ) -> None:
     """Install an official V-JEPA 2 encoder as the frozen/adapted backbone.
 
-    `spec` has the form `vjepa2:<path>[:mode]` where mode is one of
-    `frozen` (default), `last_k`, `lora`, `finetune`. The backbone replaces
-    `module.student_encoder.frame_encoder` (and the EMA twin) and is projected
-    to `latent_dim` to keep the `[B, T, D]` state contract unchanged.
+    `spec` forms:
+      vjepa2:<path>[:mode]    native-format checkpoint (key-remapped structural twin)
+      vjepa2hf:<path>[:mode]  HuggingFace-format safetensors via transformers
+                              VJEPA2Model (real V-JEPA 2.1 weights)
+    mode is one of `frozen` (default), `last_k`, `lora`, `finetune` (last_k/lora
+    apply to the native twin; HF path supports frozen|finetune).
     """
-    from vjepa_backbone import install_vjepa2_encoder
+    parts = spec.split(":", 1)
+    kind = parts[0]
+    if kind not in ("vjepa2", "vjepa2hf") or len(parts) < 2:
+        raise ValueError(f"invalid vjepa2 spec: {spec!r} (expected 'vjepa2:<path>[:mode]' or 'vjepa2hf:<path>[:mode]')")
+    remainder = parts[1]
+    # mode is an optional trailing segment; paths may contain ':' (Windows drive)
+    mode = "frozen"
+    for candidate in ("frozen", "finetune", "last_k", "lora"):
+        suffix = f":{candidate}"
+        if remainder.endswith(suffix):
+            mode = candidate
+            remainder = remainder[: -len(suffix)]
+            break
+    checkpoint = remainder
+    if not checkpoint:
+        raise ValueError(f"empty checkpoint in spec {spec!r}")
+    if kind == "vjepa2hf":
+        if mode not in ("frozen", "finetune"):
+            raise ValueError(f"vjepa2hf mode must be frozen|finetune, got {mode!r}")
+        from vjepa_backbone import install_hf_vjepa2_encoder
 
-    parts = spec.split(":")
-    if len(parts) < 2 or parts[0] != "vjepa2":
-        raise ValueError(f"invalid vjepa2 spec: {spec!r} (expected 'vjepa2:<path>[:mode]')")
-    checkpoint = ":".join(parts[1:2])
-    mode = parts[2] if len(parts) > 2 else "frozen"
-    if mode not in ("frozen", "last_k", "lora", "finetune"):
-        raise ValueError(f"unknown vjepa2 mode {mode!r}")
-    report = install_vjepa2_encoder(
-        module,
-        latent_dim=latent_dim,
-        checkpoint=checkpoint,
-        mode=mode,
-        lora_rank=lora_rank,
-        unfreeze_last_k=unfreeze_last_k,
-        strict=strict,
-    )
+        report = install_hf_vjepa2_encoder(
+            module,
+            latent_dim=latent_dim,
+            ckpt_path=checkpoint,
+            mode=mode,
+            img_size=img_size,
+        )
+    else:
+        if mode not in ("frozen", "last_k", "lora", "finetune"):
+            raise ValueError(f"unknown vjepa2 mode {mode!r}")
+        from vjepa_backbone import install_vjepa2_encoder
+
+        report = install_vjepa2_encoder(
+            module,
+            latent_dim=latent_dim,
+            checkpoint=checkpoint,
+            mode=mode,
+            lora_rank=lora_rank,
+            unfreeze_last_k=unfreeze_last_k,
+            strict=strict,
+        )
     if is_primary():
         print(
             json.dumps(
                 {
-                    "init": "vjepa2",
+                    "init": kind,
                     "mode": mode,
                     "checkpoint": checkpoint,
                     "loaded_keys": report.loaded,
@@ -374,7 +405,7 @@ def train(config: TrainConfig) -> None:
         ema_momentum=config.ema_momentum,
     ).to(device)
     if config.init_from:
-        if config.init_from.startswith("vjepa2:"):
+        if config.init_from.startswith("vjepa2:") or config.init_from.startswith("vjepa2hf:"):
             init_from_vjepa2(
                 module,
                 config.init_from,
@@ -382,6 +413,7 @@ def train(config: TrainConfig) -> None:
                 lora_rank=config.init_lora_rank,
                 unfreeze_last_k=config.init_unfreeze_last_k,
                 latent_dim=config.latent_dim,
+                img_size=config.init_img_size,
             )
         else:
             load_incremental_parent(module, config.init_from)

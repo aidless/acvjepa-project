@@ -32,6 +32,7 @@
 | 加载验证 | `HFVJEPA2Backbone`：**391/395 键加载（encoder 全覆盖）**；12 个 skip = predictor 蒸馏头(1664)与辅助键（无需）；`[1,3,384,384]→[1,latent_dim]` forward 契约 PASS；安装进 AC-VJEPA + EMA 训练步 PASS |
 | 许可 | 遵循 Meta V-JEPA 2 条款（HF 模型卡标注 `other`，原作者 Meta AI；商用需自行确认） |
 | 用途 | M2 域适配的冻结骨干（frozen）或轻适配（finetune）；predictor 头不使用 |
+| 训练入口 | `train_ac_vjepa_ddp.py --init-from vjepa2hf:<path>[:frozen|finetune] --init-img-size 384`（Gloo 双进程已实测 exit=0 + checkpoint 落盘）；spec 解析兼容 Windows 盘符冒号 |
 
 ## B 层：本地无标签视频（待采集）
 

@@ -410,9 +410,10 @@ class HFVJEPA2Backbone(nn.Module):
         for p in self.head.parameters():
             p.requires_grad_(True)
 
-    @torch.no_grad()
     def forward(self, frames: torch.Tensor) -> torch.Tensor:
         # frames: [N, C, H, W] -> videos: [N, 1, C, H, W]
+        # NOTE: no @torch.no_grad here — the projection head is trainable and
+        # must receive gradients; frozen HF params carry requires_grad=False.
         videos = frames.unsqueeze(1)
         out = self.hf(pixel_values_videos=videos)
         feats = out.last_hidden_state.mean(dim=1)  # [N, hidden]
