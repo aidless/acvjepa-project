@@ -163,7 +163,7 @@ def assemble(args) -> int:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="M2 data assembly: B/C layers -> versioned training inputs")
-    parser.add_argument("--repo", default=r"F:\deepseek\acvjepa-project")
+    parser.add_argument("--repo", default=str(Path(__file__).resolve().parent))
     parser.add_argument("--output", required=True)
     parser.add_argument("--simulator", choices=["synthetic", "robocasa"], default="synthetic")
     parser.add_argument("--video-dir", help="B-layer unlabeled clip dir (optional)")

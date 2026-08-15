@@ -2,8 +2,9 @@
 # Runs every self-contained smoke test / unit test / config validator that can run
 # on this machine (CPU, 1x RTX 3060 Laptop 6GB, Docker CLI). Cluster/RDMA/K8s items
 # are recorded as SKIP/BLOCKED in VERIFY_RESULTS.md, not attempted here.
+# Portable: $root is this script's directory; no machine-specific paths.
 $ErrorActionPreference = 'Continue'
-$root = 'F:\deepseek\acvjepa-project'
+$root = $PSScriptRoot
 Set-Location $root
 
 $artifacts = Join-Path $root 'verify_artifacts'
@@ -109,8 +110,8 @@ $env:USE_LIBUV = '0'
 $env:CUDA_VISIBLE_DEVICES = '-1'
 $env:PYTORCH_NO_CUDA = '1'
 $demoOut = 'verify_artifacts/demo_ddp_data'
-Run-Check 'ddp.make_demo_data' @('make_demo_ddp_data.py') 
-$manifest = 'F:\home\ubuntu\lecun_analysis\demo_ddp_data\manifest.jsonl'
+Run-Check 'ddp.make_demo_data' @('make_demo_ddp_data.py','--root',$demoOut) 
+$manifest = (Join-Path $root (Join-Path $demoOut 'manifest.jsonl'))
 if (Test-Path $manifest) {
     Run-Check 'ddp.train_ac_vjepa_gloo_2proc' @('scripts/manual_gloo_runner.py','train_ac_vjepa_ddp.py','--manifest',$manifest,'--output','verify_artifacts/ddp_train_out','--epochs','1','--gradient-accumulation','1') -TimeoutSec 600
     Run-Check 'ddp.topology_aware_update_plan_2proc' @('scripts/manual_gloo_runner.py','topology_aware_update_plan.py','--smoke-test') -TimeoutSec 600

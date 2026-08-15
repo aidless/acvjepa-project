@@ -15,7 +15,7 @@ import torch
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--img-size", type=int, default=32)
-    parser.add_argument("--root", default="/home/ubuntu/lecun_analysis/demo_ddp_data")
+    parser.add_argument("--root", default="demo_ddp_data", help="output directory (portable default)")
     args = parser.parse_args()
 
     torch.manual_seed(42)
