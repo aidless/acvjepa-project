@@ -1,0 +1,109 @@
+name: acvjepa-local-chaos
+
+services:
+  metrics-demo:
+    build:
+      context: .
+      dockerfile: docker/local-chaos-demo.Dockerfile
+    command: ["python", "local_chaos_metrics_server.py", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "127.0.0.1:18000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp:uid=10001,gid=10001,mode=1777
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "docker/healthcheck.py"]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+      start_period: 3s
+    networks: [local-chaos]
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    user: "65534:65534"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=6h
+      - --no-web.enable-lifecycle
+    ports:
+      - "127.0.0.1:19090:9090"
+    volumes:
+      - type: bind
+        source: ./docker/prometheus.local.yml
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
+      - type: bind
+        source: ./monitoring/prometheus_rules.yml
+        target: /etc/prometheus/rules/acvjepa.yml
+        read_only: true
+    read_only: true
+    tmpfs:
+      - /tmp:uid=65534,gid=65534,mode=1777
+      - /prometheus:uid=65534,gid=65534,mode=0755
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      metrics-demo:
+        condition: service_healthy
+    networks: [local-chaos]
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    user: "472:472"
+    environment:
+      GF_SECURITY_ADMIN_USER: local-demo
+      GF_SECURITY_ADMIN_PASSWORD: local-demo-not-for-production
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 5s
+    ports:
+      - "127.0.0.1:13000:3000"
+    volumes:
+      - type: bind
+        source: ./docker/grafana/provisioning
+        target: /etc/grafana/provisioning
+        read_only: true
+      - type: bind
+        source: ./monitoring/grafana_acvjepa_elastic_dashboard.json
+        target: /var/lib/grafana/dashboards/acvjepa_elastic_dashboard.json
+        read_only: true
+    read_only: true
+    tmpfs:
+      - /tmp:uid=472,gid=472,mode=1777
+      - /var/lib/grafana:uid=472,gid=472,mode=0750
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      prometheus:
+        condition: service_started
+    networks: [local-chaos]
+
+  chaos-ci:
+    build:
+      context: .
+      dockerfile: docker/local-chaos-demo.Dockerfile
+    command: ["/bin/sh", "-ec", "ARTIFACT_DIR=/tmp/artifacts scripts/run_offline_chaos_contract.sh && cp /tmp/artifacts/* /artifacts/"]
+    volumes:
+      - type: bind
+        source: ./artifacts-compose
+        target: /artifacts
+    read_only: true
+    tmpfs:
+      - /tmp:uid=10001,gid=10001,mode=1777
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - local-chaos
+    profiles: ["ci"]
+
+networks:
+  local-chaos:
+    internal: true

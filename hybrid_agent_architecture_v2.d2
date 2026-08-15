@@ -1,0 +1,53 @@
+direction: right
+
+user: "用户/任务系统\n自然语言目标"
+
+orchestrator: {
+  label: "语义与任务层"
+  llm: "LLM 编排器\n目标理解 · 检索 · 分层分解"
+  contract: "PlanSpec\n子目标 · 约束 · 成功判据\n动作语法 · 风险级别"
+  memory: "语义记忆\n规则 · 历史 · 文档 · 用户偏好"
+  llm -> contract: "受约束规划"
+  memory -> llm: "检索上下文"
+}
+
+state: {
+  label: "状态与预测层"
+  obs: "观测适配器\n相机/传感器/日志/API"
+  encoder: "JEPA 编码器\n历史观测 → 潜在状态 zₜ"
+  wm: "动作条件 JEPA 世界模型\n(zₜ, aₜ:ₜ₊ₕ, g) → ẑₜ₊₁:ₜ₊ₕ"
+  estimator: "不确定性估计\nensemble · OOD · 预测残差"
+  obs -> encoder
+  encoder -> wm
+  wm -> estimator
+}
+
+control: {
+  label: "规划、验证与执行层"
+  planner: "MPC / 采样规划器\n候选动作序列与价值评分"
+  gate: "安全验证器\n前置条件 · 硬约束 · 权限\n人工确认 · 回滚策略"
+  executor: "执行器\n机器人控制 / 工具调用 / API"
+  verifier: "事后校验\n真实观测 vs 预测结果"
+  planner -> gate
+  gate -> executor: "批准的动作 aₜ"
+  executor -> verifier
+}
+
+environment: "真实环境\n物理世界 / 软件系统"
+
+user -> orchestrator.llm
+orchestrator.contract -> control.planner: "目标 g、约束 C、\n候选动作空间 A"
+state.encoder -> control.planner: "当前状态 zₜ"
+state.wm -> control.planner: "未来轨迹 ẑ、成本、\n可达性与风险"
+state.estimator -> control.gate: "置信度 / OOD 信号"
+control.verifier -> environment: "观测请求"
+environment -> state.obs: "真实观测 oₜ₊₁"
+control.verifier -> orchestrator.llm: "结果、偏差、失败类型"
+control.verifier -> state.encoder: "校正后的观测"
+control.gate -> orchestrator.llm: "需要澄清/确认/重规划"
+
+orchestrator.style.fill: "#EEF4FF"
+state.style.fill: "#EFFBF4"
+control.style.fill: "#FFF5EC"
+user.style.fill: "#F5F5F5"
+environment.style.fill: "#F5F5F5"

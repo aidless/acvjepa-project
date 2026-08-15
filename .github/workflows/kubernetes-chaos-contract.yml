@@ -1,0 +1,78 @@
+name: Kubernetes Chaos Contract Artifact
+
+on:
+  pull_request:
+    paths:
+      - 'k8s/chaos-lab/**'
+      - 'scripts/run_offline_chaos_contract.sh'
+      - 'threadsafe_checkpoint_load_gate.py'
+      - 'checkpoint_integrity_corruption_demo.py'
+      - 'render_kubernetes_chaos_contract.py'
+      - '.github/workflows/kubernetes-chaos-contract.yml'
+  workflow_dispatch:
+    inputs:
+      chaos_contract_image:
+        description: 'Approved immutable acvjepa-chaos-contract image digest'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contract:
+    name: Offline chaos contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+          check-latest: false
+      - name: Install deterministic test dependencies
+        run: python -m pip install --require-virtualenv=false 'prometheus-client==0.20.0' 'PyYAML==6.0.2'
+      - name: Run shared offline contract and Kubernetes template validation
+        run: ARTIFACT_DIR=artifacts scripts/run_offline_chaos_contract.sh
+      - name: Upload sanitized offline diagnostics
+        if: always()
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v4.6.2
+        with:
+          name: kubernetes-chaos-offline-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+          include-hidden-files: false
+
+  render-approved-manifest:
+    name: Render approved isolated Job manifest
+    if: github.event_name == 'workflow_dispatch'
+    needs: offline-contract
+    runs-on: ubuntu-24.04
+    environment:
+      name: chaos-lab-manifest-approval
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+          check-latest: false
+      - name: Install YAML parser
+        run: python -m pip install --require-virtualenv=false 'PyYAML==6.0.2'
+      - name: Render immutable-digest manifest only
+        env:
+          CHAOS_CONTRACT_IMAGE: ${{ inputs.chaos_contract_image }}
+        run: python render_kubernetes_chaos_contract.py --image "$CHAOS_CONTRACT_IMAGE" --output rendered/offline-chaos-contract.yaml
+      - name: Upload reviewed GitOps input
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v4.6.2
+        with:
+          name: reviewed-chaos-lab-manifest-${{ github.run_id }}
+          path: rendered/offline-chaos-contract.yaml
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false

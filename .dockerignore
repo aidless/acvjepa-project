@@ -1,0 +1,11 @@
+.git
+.github
+artifacts
+artifacts-compose
+__pycache__
+*.pyc
+*.sqlite
+*.ckpt
+*.pt
+.env
+*.env

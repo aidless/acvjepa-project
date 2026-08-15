@@ -1,0 +1,20 @@
+flowchart LR
+    U[用户目标与约束] --> L[语言模型\n理解、知识、高层分解]
+    S[相机、触觉、状态传感器] --> E[感知编码器\n多模态状态估计]
+    E --> W[动作条件世界模型\n预测后果与不确定性]
+    L --> P[规划、搜索与验证器\n生成并校验候选方案]
+    W --> P
+    P --> C[控制器\n安全约束下执行]
+    C --> A[现实环境]
+    A --> S
+    A --> R[任务结果与反馈]
+    R --> L
+
+    classDef lang fill:#0B3C5D,stroke:#0B3C5D,color:#FFFFFF;
+    classDef world fill:#14B8A6,stroke:#0F766E,color:#FFFFFF;
+    classDef exec fill:#F59E0B,stroke:#B45309,color:#1F2937;
+    classDef env fill:#E5E7EB,stroke:#6B7280,color:#1F2937;
+    class L lang;
+    class E,W world;
+    class P,C exec;
+    class U,S,A,R env;
