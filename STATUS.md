@@ -1,6 +1,14 @@
 # STATUS — 项目当前状态快照
 
-> 快照时间：2026-08-15（接管日）。验证结果明细以 `VERIFY_RESULTS.md` 为准。
+> 快照时间：2026-08-15（接管日 + M1）。验证结果明细以 `VERIFY_RESULTS.md` 为准；里程碑见 `PROJECT_PLAN.md`。
+
+## M1 实验基座（2026-08-15）— ✅ 完成（PROJECT_PLAN 里程碑）
+
+- `vjepa_backbone.py`：官方 V-JEPA 2 ViT-B/16 权重适配器（键重映射：`encoder.`/`backbone.` 前缀剥离、qkv 合并/拆分、`patch_embed` 别名；微调模式 frozen/last_k/lora/finetune；LoRA 低秩适配；安装时同步替换 student+EMA frame_encoder）。
+- `vjepa_backbone_smoke.py`：4 类检查全 PASS（forward 契约 / 模式 / 150 键 strict 重映射 / 安装+训练步+EMA）。
+- `train_ac_vjepa_ddp.py`：`--init-from vjepa2:<path>[:mode]` 扩展（含 `--init-lora-rank` / `--init-unfreeze-last-k`）。
+- `DATA_MANIFEST.md`：四层数据金字塔登记清单（A 官方权重 / B 本地视频 / C RoboCasa / D 真实轨迹）。
+- 待办：官方权重下载（数百 MB，网络/许可前置）→ M2 域适配需 A/B/C 层数据 + ≥24GB GPU。
 
 ## 阶段一：研究与评估（2026-08-14）— ✅ 完成
 

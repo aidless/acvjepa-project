@@ -87,6 +87,8 @@ class TrainConfig:
     power_sgd_start_iter: int = 500
     seed: int = 2026
     init_from: Optional[str] = None
+    init_lora_rank: int = 8
+    init_unfreeze_last_k: int = 1
 
 
 class WindowEpisodeDataset(Dataset[Dict[str, torch.Tensor]]):
@@ -251,7 +253,15 @@ def parse_args() -> TrainConfig:
     parser.add_argument("--num-workers", type=int, default=4)
     parser.add_argument("--learning-rate", type=float, default=2e-4)
     parser.add_argument("--latent-dim", type=int, default=128)
-    parser.add_argument("--init-from", help="optional compatible parent checkpoint for incremental fine-tuning")
+    parser.add_argument(
+        "--init-from",
+        help=(
+            "incremental parent checkpoint, or 'vjepa2:<path>[:mode]' to load an "
+            "official V-JEPA 2 encoder as frozen backbone (mode: frozen|last_k|lora|finetune)"
+        ),
+    )
+    parser.add_argument("--init-lora-rank", type=int, default=8)
+    parser.add_argument("--init-unfreeze-last-k", type=int, default=1)
     parser.add_argument("--amp", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--static-graph", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--comm-hook", choices=["none", "fp16", "bf16", "powersgd"], default="none")
@@ -273,6 +283,8 @@ def parse_args() -> TrainConfig:
         comm_hook=args.comm_hook,
         power_sgd_rank=args.power_sgd_rank,
         power_sgd_start_iter=args.power_sgd_start_iter,
+        init_lora_rank=args.init_lora_rank,
+        init_unfreeze_last_k=args.init_unfreeze_last_k,
     )
 
 
@@ -290,6 +302,57 @@ def load_incremental_parent(module: ActionConditionedVJEPA, checkpoint_path: str
     if "model" not in payload:
         raise KeyError("incremental parent checkpoint missing model state")
     module.load_state_dict(payload["model"], strict=True)
+
+
+def init_from_vjepa2(
+    module: ActionConditionedVJEPA,
+    spec: str,
+    *,
+    strict: bool = True,
+    lora_rank: int = 8,
+    unfreeze_last_k: int = 1,
+    latent_dim: int = 128,
+) -> None:
+    """Install an official V-JEPA 2 encoder as the frozen/adapted backbone.
+
+    `spec` has the form `vjepa2:<path>[:mode]` where mode is one of
+    `frozen` (default), `last_k`, `lora`, `finetune`. The backbone replaces
+    `module.student_encoder.frame_encoder` (and the EMA twin) and is projected
+    to `latent_dim` to keep the `[B, T, D]` state contract unchanged.
+    """
+    from vjepa_backbone import install_vjepa2_encoder
+
+    parts = spec.split(":")
+    if len(parts) < 2 or parts[0] != "vjepa2":
+        raise ValueError(f"invalid vjepa2 spec: {spec!r} (expected 'vjepa2:<path>[:mode]')")
+    checkpoint = ":".join(parts[1:2])
+    mode = parts[2] if len(parts) > 2 else "frozen"
+    if mode not in ("frozen", "last_k", "lora", "finetune"):
+        raise ValueError(f"unknown vjepa2 mode {mode!r}")
+    report = install_vjepa2_encoder(
+        module,
+        latent_dim=latent_dim,
+        checkpoint=checkpoint,
+        mode=mode,
+        lora_rank=lora_rank,
+        unfreeze_last_k=unfreeze_last_k,
+        strict=strict,
+    )
+    if is_primary():
+        print(
+            json.dumps(
+                {
+                    "init": "vjepa2",
+                    "mode": mode,
+                    "checkpoint": checkpoint,
+                    "loaded_keys": report.loaded,
+                    "skipped_keys": len(report.skipped_keys),
+                    "strict_ok": report.strict_ok,
+                },
+                sort_keys=True,
+            ),
+            flush=True,
+        )
 
 
 def train(config: TrainConfig) -> None:
@@ -311,7 +374,17 @@ def train(config: TrainConfig) -> None:
         ema_momentum=config.ema_momentum,
     ).to(device)
     if config.init_from:
-        load_incremental_parent(module, config.init_from)
+        if config.init_from.startswith("vjepa2:"):
+            init_from_vjepa2(
+                module,
+                config.init_from,
+                strict=True,
+                lora_rank=config.init_lora_rank,
+                unfreeze_last_k=config.init_unfreeze_last_k,
+                latent_dim=config.latent_dim,
+            )
+        else:
+            load_incremental_parent(module, config.init_from)
 
     # DDP is preferable while the 80M-class backbone is frozen or lightly tuned:
     # all ranks keep a full replica, then all-reduce gradients efficiently.

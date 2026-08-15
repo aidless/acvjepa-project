@@ -74,6 +74,8 @@ torchrun --standalone --nproc_per_node=2 test_dynamic_nccl_full_state_equivalenc
 | `Kubernetes 生产监控阈值与 Rendezvous—GitOps 并发仲裁手册.md` | 生产仲裁 |
 | `决策记录.md` | 全部决策与未决影响 |
 | `PROJECT_PLAN.md` | **主计划**：从路线之争到可运行实验体系（M0–M5 里程碑与门禁） |
+| `DATA_MANIFEST.md` | 四层数据金字塔清单（A 官方权重 / B 本地视频 / C RoboCasa / D 真实轨迹） |
+| `vjepa_backbone.py` + `vjepa_backbone_smoke.py` | **M1 交付**：官方 V-JEPA 2 权重适配器（frozen/last_k/lora/finetune）+ 冒烟 |
 | `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 当前状态 / 待办分级 / 验证结果 |
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `C9_AMI_JEPA_更新核验_2026-08-15.md` | AMI/JEPA 最新动态核验（ICML 2026 等） |
