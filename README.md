@@ -82,8 +82,9 @@ torchrun --standalone --nproc_per_node=2 test_dynamic_nccl_full_state_equivalenc
 
 ## 验证基线与待办
 
-- 验证结果与逐项证据见 `VERIFY_RESULTS.md`（由 `verify_all.ps1` 重跑可刷新）。**当前基线：42/42 全绿**（单元测试 5、独立冒烟 22、配置校验 6、Gloo 双进程 4、容器/契约 4+1）。
+- 验证结果与逐项证据见 `VERIFY_RESULTS.md`（由 `verify_all.ps1` 重跑可刷新）。基线含：单元测试 5、独立冒烟 22、配置校验 6、Gloo 双进程 4、容器/契约 4+1、**HF 真实权重训练冒烟 2（demo 数据 + checkpoint 落盘，权重存在时）**。
 - Gloo 双进程回归在本机使用 `scripts/manual_gloo_runner.py`（torchrun 的 elastic agent 会触发本机页文件限制）。
+- HF 真实权重路径：`weights/vjepa2.1-vitb-fpc64-384/model.safetensors`（见 `DATA_MANIFEST.md`）；`--init-from vjepa2hf:<path>[:frozen|finetune]`。
 - 未决事项按「本机可做 / 需真实集群硬件 / 需外部系统审批」三级见 `BACKLOG.md`；B 级项的执行步骤见 `CLUSTER_VALIDATION_RUNBOOK.md`。
 
 ## 原始交付包与完整性

@@ -1,11 +1,12 @@
-# VERIFY_RESULTS — 接管验证结果（2026-08-15，最终全绿 42/42）
+# VERIFY_RESULTS — 接管验证结果（2026-08-15，最终全绿 44/44）
 
 > 由 `verify_all.ps1` 生成；重跑命令：`.\verify_all.ps1`（幂等，产物在 `verify_artifacts/`）。
 > 环境：Windows 11 沙箱 · Python 3.12.7 · torch 2.5.1+cu121（RTX 3060 Laptop 6GB）· Docker 29.6.2。
-> 汇总：**42/42 PASS（全绿）**。Gloo 双进程语义回归通过 `scripts/manual_gloo_runner.py`
-> 手工双进程运行（绕开 torchrun elastic agent 在本机页文件限制下不可行的问题）。
+> 汇总：**44/44 PASS（全绿）**。Gloo 双进程语义回归通过 `scripts/manual_gloo_runner.py`
+> 手工双进程运行（绕开 torchrun elastic agent 在本机页文件限制下不可行的问题）；
+> **H 组 HF 真实权重训练冒烟**（`--init-from vjepa2hf:` → demo 数据 + 训练 + checkpoint 落盘）。
 
-## 通过项（42/42）
+## 通过项（44/44）
 
 ### 单元测试（5/5）
 | 检查 | 结果 |
@@ -44,6 +45,7 @@ ddp.make_demo_data、docker.compose_config、**docker.local_chaos_demo（build�
 4. **Windows 偶发文件锁**：chaos framework 的 `TemporaryDirectory` 清理偶发 WinError 32 → 加 `ignore_cleanup_errors=True`（Python 3.12 官方推荐）；np.load 句柄用 `payload.close()`；hitl 演示改用临时文件保证幂等。
 5. **torchrun 不可用于 Gloo 回归**：torch 2.5.1 Windows wheel 无 libuv（`USE_LIBUV=0` 可修复 store 层），且 torchrun elastic agent 自身完整 import torch 导致 WinError 1455（页文件不足）→ 用 `scripts/manual_gloo_runner.py` 手工 spawn 两个 rank 进程（RANK/WORLD_SIZE env + gloo），语义回归 4/4 通过。
 6. **容器内契约脚本**：chaos-ci 镜像按 .dockerignore 排除 `.github/workflows/`（CI 文件不入演示镜像），`run_offline_chaos_contract.sh` 对这两个校验在文件缺失时显式 SKIP（容器语义），仓库 checkout 场景保持严格校验。
+7. **HF 真实权重训练冒烟（H 组）**：需 `weights/vjepa2.1-vitb-fpc64-384/model.safetensors`（438.9 MB，SHA 见 DATA_MANIFEST）；单进程 CPU 384px 冻结骨干，`--init-from vjepa2hf:<path>:frozen` → 1 epoch 4 步训练 → 校验 `last.pt` 落盘（约 414 MB，测后清理）；权重缺失时 SKIP 不阻塞其余项。
 
 ## 修复清单（接管期间对交付代码的改动，均已记录于决策记录）
 

@@ -137,6 +137,44 @@ if ($LASTEXITCODE -eq 0) {
 # --- G. project's own offline contract shell script (best effort via git-bash) --------
 Run-Check 'contract.offline_chaos_contract_sh' @('scripts/run_offline_chaos_contract.sh') -TimeoutSec 600 -FilePath 'bash'
 
+# --- H. Real V-JEPA2 HF weights -> training entry (single proc, CPU) -----------------
+# Requires the downloaded safetensors (weights/vjepa2.1-vitb-fpc64-384/model.safetensors,
+# see DATA_MANIFEST.md A-layer). Runs the actual `--init-from vjepa2hf:` path through
+# train_ac_vjepa_ddp.py: 384px demo windows, frozen backbone, 1 epoch, then checks the
+# checkpoint file landed. SKIPs when weights are absent.
+$hfCkpt = Join-Path $root 'weights\vjepa2.1-vitb-fpc64-384\model.safetensors'
+if (Test-Path $hfCkpt) {
+    $env:USE_LIBUV = '0'
+    $env:CUDA_VISIBLE_DEVICES = '-1'
+    $env:PYTORCH_NO_CUDA = '1'
+    $env:RANK = '0'
+    $env:LOCAL_RANK = '0'
+    $env:WORLD_SIZE = '1'
+    $env:MASTER_ADDR = '127.0.0.1'
+    $env:MASTER_PORT = '29701'
+    $hfDemo = 'verify_artifacts/hf_demo'
+    $hfOut = 'verify_artifacts/hf_train_out'
+    Run-Check 'hf.make_demo_data_384' @('make_demo_ddp_data.py','--img-size','384','--root',(Join-Path $root $hfDemo))
+    $hfManifest = Join-Path $root (Join-Path $hfDemo 'manifest.jsonl')
+    if (Test-Path $hfManifest) {
+        Run-Check 'hf.train_vjepa2hf_frozen_1proc' @('train_ac_vjepa_ddp.py','--manifest',$hfManifest,'--output',(Join-Path $root $hfOut),'--epochs','1','--per-rank-batch-size','1','--gradient-accumulation','1','--num-workers','0','--init-from',"vjepa2hf:${hfCkpt}:frozen",'--init-img-size','384','--latent-dim','64') -TimeoutSec 600
+        $hfLast = Join-Path $root (Join-Path $hfOut 'last.pt')
+        if (Test-Path $hfLast) {
+            "PASS`thf.checkpoint_saved`tlast.pt exists ($([math]::Round((Get-Item $hfLast).Length/1MB,1)) MB)" | Add-Content $summary -Encoding UTF8
+            Write-Host "[PASS] hf.checkpoint_saved"
+        } else {
+            "FAIL`thf.checkpoint_saved`tlast.pt missing" | Add-Content $summary -Encoding UTF8
+            Write-Host "[FAIL] hf.checkpoint_saved (last.pt missing)"
+        }
+        Remove-Item (Join-Path $root $hfOut) -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Remove-Item (Join-Path $root $hfDemo) -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item Env:RANK,Env:LOCAL_RANK,Env:WORLD_SIZE,Env:MASTER_ADDR,Env:MASTER_PORT -ErrorAction SilentlyContinue
+} else {
+    "SKIP`thf.*`tweights not present: $hfCkpt" | Add-Content $summary -Encoding UTF8
+    Write-Host "[SKIP] hf.* (weights missing)"
+}
+
 Write-Host ''
 Write-Host '=== SUMMARY ==='
 Get-Content $summary
