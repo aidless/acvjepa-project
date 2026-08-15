@@ -123,6 +123,9 @@ def train_domain_adapt(config: DomainAdaptConfig) -> None:
             from train_ac_vjepa_ddp import load_incremental_parent
 
             load_incremental_parent(module, config.init_from)
+        # Backbone installs happen after the initial .to(device); move the newly
+        # attached encoder (HF model loads on CPU) to the training device.
+        module = module.to(device)
 
     ddp: DDP | ActionConditionedVJEPA
     if world_size() > 1:

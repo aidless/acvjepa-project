@@ -1,12 +1,13 @@
-# VERIFY_RESULTS — 接管验证结果（2026-08-15，最终全绿 52/52）
+# VERIFY_RESULTS — 接管验证结果（2026-08-15，最终全绿 59/59）
 
 > 由 `verify_all.ps1` 生成；重跑命令：`.\verify_all.ps1`（幂等，产物在 `verify_artifacts/`）。
 > 环境：Windows 11 沙箱 · Python 3.12.7 · torch 2.5.1+cu121（RTX 3060 Laptop 6GB）· Docker 29.6.2。
-> 汇总：**52/52 PASS（全绿）**。Gloo 双进程语义回归通过 `scripts/manual_gloo_runner.py`
+> 汇总：**59/59 PASS（全绿）**。Gloo 双进程语义回归通过 `scripts/manual_gloo_runner.py`
 > 手工双进程运行；**H 组 HF 真实权重训练冒烟**；**I 组 M2 数据装配**；
-> **J 组 P1 域适配训练**（冻结 HF 骨干 + 无动作损失）。
+> **J 组 P1 域适配（CPU）**；**K 组 P1 CUDA 微型训练（峰值 510.8MB）**；
+> **L 组 P2 动作条件 CUDA 训练（峰值 567.2MB）**。
 
-## 通过项（52/52）
+## 通过项（59/59）
 
 ### 单元测试（5/5）
 | 检查 | 结果 |
@@ -48,6 +49,7 @@ ddp.make_demo_data、docker.compose_config、**docker.local_chaos_demo（build�
 7. **HF 真实权重训练冒烟（H 组）**：需 `weights/vjepa2.1-vitb-fpc64-384/model.safetensors`（438.9 MB，SHA 见 DATA_MANIFEST）；单进程 CPU 384px 冻结骨干，`--init-from vjepa2hf:<path>:frozen` → 1 epoch 4 步训练 → 校验 `last.pt` 落盘（约 414 MB，测后清理）；权重缺失时 SKIP 不阻塞其余项。
 8. **M2 数据装配（I 组，portable synthetic）**：`robocasa_adapter.py` 契约冒烟（合成后端，无 RoboCasa 依赖）→ `scripts/make_synthetic_clips.py` 合成 B 层帧 → `video_to_windows.py` 切域适配窗口（零动作/事件 + domain_adaptation_only 标记）→ `assemble_m2_dataset.py` 端到端装配（C 层 episode→commit→windows + B 层窗口 + split 隔离校验 + DATA_MANIFEST 登记）。B 层窗口可被训练器 `WindowEpisodeDataset` 直接加载（provenance 存于 .pt）。
 9. **P1 域适配训练（J 组）**：`train_p1_domain_adapt.py` 复用 DDP/EMA/checkpoint 基建，冻结官方 V-JEPA 骨干，损失显式排除动作与事件（`event_term: 0.0`）；384px B 层窗口 1 epoch 单进程训练 + `p1-last.pt` 落盘校验；权重缺失时 SKIP。
+10. **P1/P2 CUDA 微型训练（K/L 组）**：复审发现冻结骨干训练峰值仅 ~510MB → 本机 6GB 可跑真实权重 CUDA 训练。修复两个真实 bug：① `setup_distributed` 在 Windows wheel（无 NCCL）下回退 Gloo；② backbone 安装发生在 `.to(device)` 之后 → 安装后重新 `.to(device)`。K 组 P1 冻结 GPU 训练（峰值 510.8MB）+ L 组 P2 动作条件 GPU 训练（峰值 567.2MB）均通过且 checkpoint 落盘；CUDA 不可用或权重缺失时 SKIP。
 
 ## 修复清单（接管期间对交付代码的改动，均已记录于决策记录）
 

@@ -31,7 +31,7 @@
 - 11 页 PPT（`杨立昆、世界模型与 AMI Labs.pptx`）与讲稿（`slide_content.md`）完成。
 - 深度报告 5 份（数据算力瓶颈、轻量 V-JEPA 实验路线、架构本质区别、开源 JEPA-Agent 清单、jepa-wms 仓库笔记）。
 
-## 阶段二：AC-VJEPA 工程（2026-08-15）— ✅ 代码与文档完成；验证基线全绿（52/52）
+## 阶段二：AC-VJEPA 工程（2026-08-15）— ✅ 代码与文档完成；验证基线全绿（59/59）
 
 - 训练核心：`ac_vjepa_core.py`（CPU 冒烟已跑通：训练步/EMA/NORMAL/LOCAL_HOLD→LLM_SUPERVISION）、`train_ac_vjepa_ddp.py`（DDP/torchrun/Gloo）、`dynamic_nccl_update_plan_train.py`、`topology_aware_update_plan.py`。
 - 弹性恢复与一致性：混合精度恢复、数据游标账本、Rendezvous—GitOps 仲裁、快速重建告警、RDMA/rail 守卫。
@@ -44,7 +44,7 @@
 
 - 全部 148 文件已物化为工作副本，无非法文件名；全部模块 import 通过（`healthcheck.py` 为网络探针除外）。
 - 依赖补装：`prometheus-client`（原交付缺失）。
-- **验证基线：52/52 全绿**（2026-08-15 最终）：
+- **验证基线：59/59 全绿**（2026-08-15 最终）：
   - 5 个单元测试文件（21 用例）全过；
   - 22 个独立冒烟全过（含 mixed_precision 复跑稳定）；
   - 6 个配置校验全过（还原目录结构后）；
@@ -52,7 +52,9 @@
   - Docker compose 全流程实测：build→up 3 容器 Healthy→chaos-ci profile 容器内跑离线契约→down；
   - **H 组 HF 真实权重训练冒烟 3 项**（`--init-from vjepa2hf:` → demo 数据 + 训练 + checkpoint 落盘）；
   - **I 组 M2 数据装配 4 项**（RoboCasa 契约 / B 层切窗 / 端到端装配）；
-  - **J 组 P1 域适配 4 项**（合成帧 → 384px 切窗 → 域适配训练 → checkpoint）。
+  - **J 组 P1 域适配（CPU）4 项**（合成帧 → 384px 切窗 → 域适配训练 → checkpoint）；
+  - **K 组 P1 CUDA 4 项**（真实权重冻结骨干 GPU 训练，峰值 510.8MB）；
+  - **L 组 P2 动作条件 CUDA 3 项**（GPU 训练峰值 567.2MB，checkpoint 落盘）。
 - 已知环境障碍：pytest 全局 deepeval 插件损坏 → 统一用 `python -m unittest`；torch 2.5.1 Windows 无 libuv → `USE_LIBUV=0`；torchrun elastic agent 在本机页文件限制下不可用 → 用 manual_gloo_runner。
 
 ## 接管期修复（均已记录于决策记录，逻辑未变）

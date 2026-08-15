@@ -143,7 +143,13 @@ def setup_distributed() -> tuple[int, torch.device]:
     """Initialise torchrun environment; NCCL for GPUs, Gloo for CPU smoke tests."""
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))
     using_cuda = torch.cuda.is_available()
-    backend = "nccl" if using_cuda else "gloo"
+    if using_cuda and dist.is_nccl_available():
+        backend = "nccl"
+    else:
+        # Windows torch wheels are often built without NCCL (USE_NCCL=OFF); a
+        # single-GPU or CPU run still works on Gloo. Multi-GPU NCCL training
+        # requires a cluster build (see CLUSTER_VALIDATION_RUNBOOK B1).
+        backend = "gloo"
     if "RANK" in os.environ and not dist.is_initialized():
         dist.init_process_group(backend=backend, timeout=timedelta(minutes=30))
     if using_cuda:
@@ -417,6 +423,9 @@ def train(config: TrainConfig) -> None:
             )
         else:
             load_incremental_parent(module, config.init_from)
+        # Backbone installs happen after the initial .to(device); move the newly
+        # attached encoder (HF model loads on CPU) to the training device.
+        module = module.to(device)
 
     # DDP is preferable while the 80M-class backbone is frozen or lightly tuned:
     # all ranks keep a full replica, then all-reduce gradients efficiently.

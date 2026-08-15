@@ -224,6 +224,73 @@ if (Test-Path $hfCkpt) {
     Write-Host "[SKIP] p1.* (weights missing)"
 }
 
+# --- K. P1 domain-adapt CUDA micro training (real weights + frozen backbone) --------
+# Review-round finding: frozen V-JEPA train-mode peak is ~510MB on this 6GB GPU,
+# so a genuine CUDA training smoke is feasible. SKIP when CUDA or weights absent.
+Remove-Item Env:CUDA_VISIBLE_DEVICES -ErrorAction SilentlyContinue
+Remove-Item Env:PYTORCH_NO_CUDA -ErrorAction SilentlyContinue
+$cudaAvail = python -c "import torch; print(1 if torch.cuda.is_available() else 0)" 2>$null
+if (($cudaAvail -eq '1') -and (Test-Path $hfCkpt)) {
+    $kClips = Join-Path $root 'verify_artifacts/p1cuda_clips'
+    $kWin = Join-Path $root 'verify_artifacts/p1cuda_windows'
+    $kOut = Join-Path $root 'verify_artifacts/p1cuda_out'
+    Run-Check 'p1cuda.make_clips' @((Join-Path $root 'scripts/make_synthetic_clips.py'),$kClips) -TimeoutSec 120
+    Run-Check 'p1cuda.video_to_windows_384' @('video_to_windows.py','--video-dir',$kClips,'--output',$kWin,'--context-steps','2','--horizon','2','--height','384','--width','384') -TimeoutSec 300
+    $kManifest = Join-Path $kWin 'domain_adapt_windows.jsonl'
+    if (Test-Path $kManifest) {
+        Run-Check 'p1cuda.train_frozen_gpu' @((Join-Path $root 'scripts/p1_cuda_smoke.py'),'--manifest',$kManifest,'--checkpoint',$hfCkpt,'--output',$kOut,'--epochs','1') -TimeoutSec 1200
+        $kLast = Join-Path $kOut 'p1-last.pt'
+        if (Test-Path $kLast) {
+            "PASS`tp1cuda.checkpoint_saved`tp1-last.pt exists" | Add-Content $summary -Encoding UTF8
+            Write-Host "[PASS] p1cuda.checkpoint_saved"
+        } else {
+            "FAIL`tp1cuda.checkpoint_saved`tp1-last.pt missing" | Add-Content $summary -Encoding UTF8
+            Write-Host "[FAIL] p1cuda.checkpoint_saved (missing)"
+        }
+        Remove-Item $kOut -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Remove-Item $kClips,$kWin -Recurse -Force -ErrorAction SilentlyContinue
+} else {
+    if ($cudaAvail -ne '1') {
+        "SKIP`tp1cuda.*`tCUDA unavailable on this host" | Add-Content $summary -Encoding UTF8
+        Write-Host "[SKIP] p1cuda.* (CUDA unavailable)"
+    } else {
+        "SKIP`tp1cuda.*`tweights not present: $hfCkpt" | Add-Content $summary -Encoding UTF8
+        Write-Host "[SKIP] p1cuda.* (weights missing)"
+    }
+}
+
+# --- L. P2 action-conditioned CUDA micro training -----------------------------------
+# Same frozen backbone on GPU, but with the action-conditioned trainer
+# (train_ac_vjepa_ddp --init-from vjepa2hf:) and 384px demo windows with actions.
+if (($cudaAvail -eq '1') -and (Test-Path $hfCkpt)) {
+    $lDemo = Join-Path $root 'verify_artifacts/p2_demo'
+    $lOut = Join-Path $root 'verify_artifacts/p2cuda_out'
+    Run-Check 'p2cuda.make_demo_data' @('make_demo_ddp_data.py','--img-size','384','--root',$lDemo) -TimeoutSec 300
+    $lManifest = Join-Path $lDemo 'manifest.jsonl'
+    if (Test-Path $lManifest) {
+        Run-Check 'p2cuda.train_action_cond_gpu' @((Join-Path $root 'scripts/p2_cuda_smoke.py'),'--manifest',$lManifest,'--checkpoint',$hfCkpt,'--output',$lOut,'--epochs','1') -TimeoutSec 1200
+        $lLast = Join-Path $lOut 'last.pt'
+        if (Test-Path $lLast) {
+            "PASS`tp2cuda.checkpoint_saved`tlast.pt exists" | Add-Content $summary -Encoding UTF8
+            Write-Host "[PASS] p2cuda.checkpoint_saved"
+        } else {
+            "FAIL`tp2cuda.checkpoint_saved`tlast.pt missing" | Add-Content $summary -Encoding UTF8
+            Write-Host "[FAIL] p2cuda.checkpoint_saved (missing)"
+        }
+        Remove-Item $lOut -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Remove-Item $lDemo -Recurse -Force -ErrorAction SilentlyContinue
+} else {
+    if ($cudaAvail -ne '1') {
+        "SKIP`tp2cuda.*`tCUDA unavailable on this host" | Add-Content $summary -Encoding UTF8
+        Write-Host "[SKIP] p2cuda.* (CUDA unavailable)"
+    } else {
+        "SKIP`tp2cuda.*`tweights not present: $hfCkpt" | Add-Content $summary -Encoding UTF8
+        Write-Host "[SKIP] p2cuda.* (weights missing)"
+    }
+}
+
 Write-Host ''
 Write-Host '=== SUMMARY ==='
 Get-Content $summary

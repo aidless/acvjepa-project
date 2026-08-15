@@ -20,10 +20,10 @@
 | A11 | M1 实验基座：官方 V-JEPA 2.1 80M 权重获取 + `vjepa_backbone.py` 适配器 + 训练入口 `--init-from vjepa2hf:` | PROJECT_PLAN M1 | done | 438.9MB 下载验证（391/395 键）；HFVJEPA2Backbone 真实加载+EMA 训练步 PASS |
 | A12 | M2 数据装配：`robocasa_adapter.py` / `video_to_windows.py` / `assemble_m2_dataset.py` / 合成帧脚本 | PROJECT_PLAN M2 前置 | done | I 组 4 项 PASS；真实采集需 RoboCasa/sim 环境 |
 | A13 | P1 域适配训练：`train_p1_domain_adapt.py`（冻结骨干 + 无动作/事件损失） | PROJECT_PLAN M2 P1 | done | J 组 4 项 PASS；26 步 CPU 冒烟 + checkpoint |
-| A14 | 本机 CUDA 微型 P1 训练（真实权重+冻结骨干，实测峰值 473MB 可行） | 复审发现（2026-08-15） | open | 见复审计划步骤 2；风险：`ac_vjepa_core` 曾报 CUDA unknown error，需诊断 |
-| A15 | P2 动作条件训练 CUDA 微型冒烟（复用 `train_ac_vjepa_ddp.py --init-from vjepa2hf:`） | 复审计划步骤 3 | open | C 层合成窗口；动作条件损失 CUDA 路径验证 |
-| A16 | M3 评测设计文档 `M3_MPC_EVALUATION_DESIGN.md`（P3 闭环评测方案） | 复审计划步骤 4 | open | 统计设计 + 判定阈值 + RoboCasa 子集协议 |
-| A17 | C9 季度跟踪机制写入（触发条件 + 检查清单） | 复审计划步骤 5 | open | 上游 V-JEPA 2-AC/JEPA-WMs 更新时重跑 |
+| A14 | 本机 CUDA 微型 P1 训练（真实权重+冻结骨干，实测峰值 473MB 可行） | 复审发现（2026-08-15） | done | K 组 4 项 PASS：CUDA 峰值 510.8MB；修复 NCCL 回退 + 安装后 `.to(device)` 两个真实 bug |
+| A15 | P2 动作条件训练 CUDA 微型冒烟（复用 `train_ac_vjepa_ddp.py --init-from vjepa2hf:`） | 复审计划步骤 3 | done | L 组 3 项 PASS：CUDA 峰值 567.2MB，loss 与 CPU 路径一致 |
+| A16 | M3 评测设计文档 `M3_MPC_EVALUATION_DESIGN.md`（P3 闭环评测方案） | 复审计划步骤 4 | done | 已落盘：三基线/指标/统计/判定阈值/预注册约定 |
+| A17 | C9 季度跟踪机制写入（触发条件 + 检查清单） | 复审计划步骤 5 | done | 已追加至 C9 文档；下一轮 2026-11-15 |
 
 ## B. 需真实集群 / 硬件（本机 BLOCKED）
 
