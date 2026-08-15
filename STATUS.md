@@ -64,6 +64,14 @@
 - **容器内契约脚本**：chaos-ci 镜像排除 `.github/workflows/`，`run_offline_chaos_contract.sh` 对 CI workflow 校验在文件缺失时显式 SKIP（仓库场景保持严格）。
 - **新增工具**：`scripts/manual_gloo_runner.py`（手工双进程 Gloo 回归）、`requirements.txt`、`CLUSTER_VALIDATION_RUNBOOK.md`（B1–B9 执行清单）、`C9_AMI_JEPA_更新核验_2026-08-15.md`。
 
+## 研究推演与开源治理（2026-08-15 追加）
+
+- **开源化**（MIT → GitHub `aidless/acvjepa-project`）：LICENSE（含第三方声明）、CONTRIBUTING/SECURITY、README 开源版；权重 438.9MB 不入库（.gitignore）。
+- **猜想假设集** `HYPOTHESES.md`：五层 11 条可证伪假说（H-R1/R2、H-T1–T5、H-D1、H-P1/P2、H-M1）+ 预注册流程；状态全部 `proposed`。
+- **宏大蓝图** `BLUEPRINT.md` v2：十年推演总纲（纯思辨、不执行实验）——判定网络、A/B/C 分支树（含 B4）、X/Y/Z 终局、时间信号（2026Q4–2036）、决策门 G1–G5；经审阅修订（A1–A6/B1–B7 修复 + C 级建议，commit `ca96612`）。
+- **C9 检查清单扩展**：三梯队 JEPA 项目活跃度/终止率统计项（2026-11-15 轮生效）。
+- 治理闭环：决策记录追加蓝图落盘与 v2 修订条目；`origin/master` 同步至 `ca96612`。
+
 ## 后续审计（2026-08-15 完成）
 
 - **PPTX 一致性**：12 页 ↔ slide_content.md 12 区块对齐，关键事实全过（`verify_artifacts/ppt_audit_report.json`）。

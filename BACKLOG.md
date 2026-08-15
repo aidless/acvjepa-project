@@ -24,6 +24,10 @@
 | A15 | P2 动作条件训练 CUDA 微型冒烟（复用 `train_ac_vjepa_ddp.py --init-from vjepa2hf:`） | 复审计划步骤 3 | done | L 组 3 项 PASS：CUDA 峰值 567.2MB，loss 与 CPU 路径一致 |
 | A16 | M3 评测设计文档 `M3_MPC_EVALUATION_DESIGN.md`（P3 闭环评测方案） | 复审计划步骤 4 | done | 已落盘：三基线/指标/统计/判定阈值/预注册约定 |
 | A17 | C9 季度跟踪机制写入（触发条件 + 检查清单） | 复审计划步骤 5 | done | 已追加至 C9 文档；下一轮 2026-11-15 |
+| A18 | D 层采集时点裁定（H-T1 的 M2 分档需 D 层数据 vs PROJECT_PLAN「D 层=P4」的源文档张力） | BLUEPRINT v2 §2.1 已知张力 | open | 建议随 C9 2026-11-15 轮在 `决策记录.md` 登记；纯决策文档、本机可做、不跑实验 |
+| A19 | H-T2/H-T4 消融预注册登记（本机 6GB 可执行：H-T2=头容量 32/64/128/256 分档、H-T4=EMA vs 同步目标 A/B） | HYPOTHESES H-T2/H-T4；BLUEPRINT §3/G2 | open | 前置=按预注册流程登记指标口径；「不跑实验」约束下仅登记不执行，执行需用户解除约束 |
+| A20 | H-M1 开源接力观察（观察窗 2026-08-15 → 2027-02-15） | HYPOTHESES H-M1；BLUEPRINT §3/G4 | in_progress | 预注册判据：≥1 名持 GPU 外部研究者 fork/PR 并执行 M3 评测（或同类）；fork/PR/issue 动态为辅助信号 |
+| A21 | C9 下一轮核验（2026-11-15 前后） | C9 跟踪机制；BLUEPRINT §3 | open | 含 H-R2/H-P1 首读数、H-P1 双半句核验（①开源闭环②AMI 无公开复现）、三梯队项目终止率（新检查项） |
 
 ## B. 需真实集群 / 硬件（本机 BLOCKED）
 
