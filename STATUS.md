@@ -44,13 +44,15 @@
 
 - 全部 148 文件已物化为工作副本，无非法文件名；全部模块 import 通过（`healthcheck.py` 为网络探针除外）。
 - 依赖补装：`prometheus-client`（原交付缺失）。
-- **验证基线：38/40 PASS**（详见 `VERIFY_RESULTS.md`）：
+- **验证基线：52/52 全绿**（2026-08-15 最终）：
   - 5 个单元测试文件（21 用例）全过；
   - 22 个独立冒烟全过（含 mixed_precision 复跑稳定）；
   - 6 个配置校验全过（还原目录结构后）；
   - **Gloo 双进程语义回归 4/4 全过**（`scripts/manual_gloo_runner.py` 手工双进程，绕开 torchrun 页文件限制）：train/topology/full_state(118+118)/integration；
   - Docker compose 全流程实测：build→up 3 容器 Healthy→chaos-ci profile 容器内跑离线契约→down；
-  - **验证基线：52/52 全绿**（2026-08-15 最终，含 H 组 HF 训练冒烟 + I 组 M2 数据装配 + J 组 P1 域适配）。
+  - **H 组 HF 真实权重训练冒烟 3 项**（`--init-from vjepa2hf:` → demo 数据 + 训练 + checkpoint 落盘）；
+  - **I 组 M2 数据装配 4 项**（RoboCasa 契约 / B 层切窗 / 端到端装配）；
+  - **J 组 P1 域适配 4 项**（合成帧 → 384px 切窗 → 域适配训练 → checkpoint）。
 - 已知环境障碍：pytest 全局 deepeval 插件损坏 → 统一用 `python -m unittest`；torch 2.5.1 Windows 无 libuv → `USE_LIBUV=0`；torchrun elastic agent 在本机页文件限制下不可用 → 用 manual_gloo_runner。
 
 ## 接管期修复（均已记录于决策记录，逻辑未变）
