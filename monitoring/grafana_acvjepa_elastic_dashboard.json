@@ -1,0 +1,963 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Plan Digest Consensus",
+      "id": 1,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "min(acvjepa_training_plan_digest_consensus{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "MISMATCH",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "CONSENSUS",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Latest Cursor Offset",
+      "id": 2,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "max(acvjepa_training_cursor_next_offset{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Prepared Reservations",
+      "id": 3,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "max(acvjepa_training_cursor_reservations{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Committed Checkpoint Age",
+      "id": 4,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "max(acvjepa_training_checkpoint_age_seconds{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 600
+              },
+              {
+                "color": "red",
+                "value": 900
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Exact Restore (Model/EMA/Optimizer/RNG)",
+      "id": 5,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "min(acvjepa_training_state_alignment_verified{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\",component=~\"model|ema|optimizer|rng\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "BLOCK",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "VERIFIED",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "FP8 Metadata Restore",
+      "id": 6,
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "max(acvjepa_training_fp8_metadata_verified{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "N/A or FAILED",
+                  "color": "yellow"
+                },
+                "1": {
+                  "text": "VERIFIED",
+                  "color": "green"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "2:1 UpdatePlan: Local Micro-batches",
+      "id": 7,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "targets": [
+        {
+          "expr": "acvjepa_training_plan_micro_batches{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "rank {{rank_slot}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "NCCL Final AllReduce p95",
+      "id": 8,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "targets": [
+        {
+          "expr": "job:acvjepa_training_allreduce_p95_seconds:5m{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.25
+              },
+              {
+                "color": "red",
+                "value": 0.5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Update Outcome Rate",
+      "id": 9,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "sum by (outcome) (rate(acvjepa_training_update_attempts_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}[5m]))",
+          "legendFormat": "{{outcome}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Rendezvous Restart and Recovery",
+      "id": 10,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "acvjepa_training_restart_count{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "restart count",
+          "refId": "A"
+        },
+        {
+          "expr": "job:acvjepa_training_recovery_p95_seconds:30m{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "recovery p95 (s)",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Precision Safety: GradScaler and Overflows",
+      "id": 11,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
+      "targets": [
+        {
+          "expr": "acvjepa_training_grad_scaler_scale{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "GradScaler scale",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (precision_mode) (increase(acvjepa_training_precision_overflows_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}[5m]))",
+          "legendFormat": "overflows {{precision_mode}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Chaos Guard and Experiment Phase",
+      "id": 12,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
+      "targets": [
+        {
+          "expr": "sum by (phase) (acvjepa_training_chaos_experiment_phase{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"})",
+          "legendFormat": "phase {{phase}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (reason) (increase(acvjepa_training_chaos_guard_rejections_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}[1h]))",
+          "legendFormat": "rejections {{reason}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Five Failpoints: Trigger-to-TrainingReady p95",
+      "id": 13,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "targets": [
+        {
+          "expr": "job:acvjepa_training_failpoint_recovery_p95_seconds:30m{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "{{fault_class}} p95",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (fault_class) (increase(acvjepa_training_failpoint_triggers_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\",outcome=\"passed\"}[30m]))",
+          "legendFormat": "{{fault_class}} passed",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Verified Checkpoint Cache Hit Ratio",
+      "id": 14,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "targets": [
+        {
+          "expr": "job:acvjepa_training_checkpoint_cache_hit_ratio:5m{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "{{cache_tier}}/{{component_class}} hit ratio",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (cache_tier, component_class) (increase(acvjepa_training_checkpoint_cache_fetches_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\",outcome=\"integrity_failed\"}[5m]))",
+          "legendFormat": "{{cache_tier}}/{{component_class}} integrity failures",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "RecoveryDeploymentEpoch State and Generation",
+      "id": 15,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "targets": [
+        {
+          "expr": "acvjepa_training_recovery_deployment_state{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "state {{state}}",
+          "refId": "A"
+        },
+        {
+          "expr": "acvjepa_training_recovery_deployment_generation{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "generation",
+          "refId": "B"
+        },
+        {
+          "expr": "acvjepa_training_recovery_deployment_state_age_seconds{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "state age (s)",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Recovery and GitOps Input Binding Gate",
+      "id": 16,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "targets": [
+        {
+          "expr": "acvjepa_training_recovery_deployment_inputs_valid{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "all inputs valid",
+          "refId": "A"
+        },
+        {
+          "expr": "acvjepa_training_recovery_git_revision_match{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "Git revision matches",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Fencing Rejections and GitOps Sync Outcomes",
+      "id": 17,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 45
+      },
+      "targets": [
+        {
+          "expr": "sum by (actor, reason) (increase(acvjepa_training_recovery_deployment_fence_rejections_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}[5m]))",
+          "legendFormat": "fenced {{actor}}/{{reason}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (outcome) (increase(acvjepa_training_gitops_sync_attempts_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}[15m]))",
+          "legendFormat": "GitOps {{outcome}}",
+          "refId": "B"
+        },
+        {
+          "expr": "acvjepa_training_gitops_pending_age_seconds{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "pending age (s)",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Cache Stampede Protection: Verified Hit Ratio",
+      "id": 18,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 45
+      },
+      "targets": [
+        {
+          "expr": "job:acvjepa_training_checkpoint_cache_hit_ratio:5m{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "{{cache_tier}}/{{component_class}} hit ratio",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.85
+              },
+              {
+                "color": "green",
+                "value": 0.95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Cache Stampede Protection: Durable Fallback p95",
+      "id": 19,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 53
+      },
+      "targets": [
+        {
+          "expr": "job:acvjepa_training_checkpoint_durable_fallback_p95_seconds:5m{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\"}",
+          "legendFormat": "{{component_class}} durable fallback p95",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (cache_tier, component_class) (increase(acvjepa_training_checkpoint_cache_fetches_total{cluster=~\"$cluster\",job=~\"$job\",environment=~\"$environment\",outcome=\"integrity_failed\"}[5m]))",
+          "legendFormat": "{{cache_tier}}/{{component_class}} integrity failures",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": [
+    "acvjepa",
+    "cache-slo",
+    "chaos",
+    "cursor",
+    "elastic",
+    "gitops",
+    "nccl",
+    "recovery-epoch"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "cluster",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
+        "query": "label_values(acvjepa_training_plan_digest_consensus, cluster)",
+        "includeAll": false,
+        "multi": false,
+        "current": {}
+      },
+      {
+        "name": "job",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
+        "query": "label_values(acvjepa_training_plan_digest_consensus{cluster=\"$cluster\"}, job)",
+        "includeAll": false,
+        "multi": false,
+        "current": {}
+      },
+      {
+        "name": "environment",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
+        "query": "label_values(acvjepa_training_plan_digest_consensus{cluster=\"$cluster\",job=\"$job\"}, environment)",
+        "includeAll": false,
+        "multi": false,
+        "current": {}
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "AC-VJEPA Elastic Training Control Plane",
+  "uid": "acvjepa-elastic-control-plane",
+  "version": 6
+}

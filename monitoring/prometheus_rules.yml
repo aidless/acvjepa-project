@@ -1,0 +1,206 @@
+groups:
+  - name: acvjepa_training_recording
+    interval: 30s
+    rules:
+      - record: job:acvjepa_training_update_attempts:rate5m
+        expr: sum by (cluster, job, environment) (rate(acvjepa_training_update_attempts_total[5m]))
+      - record: job:acvjepa_training_allreduce_p95_seconds:5m
+        expr: histogram_quantile(0.95, sum by (le, cluster, job, environment) (rate(acvjepa_training_allreduce_duration_seconds_bucket[5m])))
+      - record: job:acvjepa_training_recovery_p95_seconds:30m
+        expr: histogram_quantile(0.95, sum by (le, cluster, job, environment) (rate(acvjepa_training_recovery_duration_seconds_bucket[30m])))
+      - record: job:acvjepa_training_update_abort_ratio:5m
+        expr: |
+          sum by (cluster, job, environment) (rate(acvjepa_training_update_attempts_total{outcome="aborted"}[5m]))
+          /
+          clamp_min(sum by (cluster, job, environment) (rate(acvjepa_training_update_attempts_total[5m])), 0.001)
+      - record: job:acvjepa_training_failpoint_recovery_p95_seconds:30m
+        expr: histogram_quantile(0.95, sum by (le, cluster, job, environment, fault_class) (rate(acvjepa_training_failpoint_stage_duration_seconds_bucket{phase="trigger_to_training_ready"}[30m])))
+      - record: job:acvjepa_training_checkpoint_cache_hit_ratio:5m
+        expr: |
+          sum by (cluster, job, environment, cache_tier, component_class) (rate(acvjepa_training_checkpoint_cache_fetches_total{outcome="hit"}[5m]))
+          /
+          clamp_min(sum by (cluster, job, environment, cache_tier, component_class) (rate(acvjepa_training_checkpoint_cache_fetches_total{outcome=~"hit|miss|fallback"}[5m])), 0.001)
+      - record: job:acvjepa_training_checkpoint_cache_integrity_failures:rate5m
+        expr: sum by (cluster, job, environment, cache_tier, component_class) (rate(acvjepa_training_checkpoint_cache_fetches_total{outcome="integrity_failed"}[5m]))
+      - record: job:acvjepa_training_checkpoint_durable_fallback_p95_seconds:5m
+        expr: histogram_quantile(0.95, sum by (le, cluster, job, environment, component_class) (rate(acvjepa_training_checkpoint_cache_fetch_duration_seconds_bucket{cache_tier="durable",outcome="fallback"}[5m])))
+      - record: job:acvjepa_training_recovery_deployment_fence_rejections:rate5m
+        expr: sum by (cluster, job, environment, actor, reason) (rate(acvjepa_training_recovery_deployment_fence_rejections_total[5m]))
+      - record: job:acvjepa_training_gitops_deferred_ratio:15m
+        expr: |
+          sum by (cluster, job, environment) (rate(acvjepa_training_gitops_sync_attempts_total{outcome="deferred"}[15m]))
+          /
+          clamp_min(sum by (cluster, job, environment) (rate(acvjepa_training_gitops_sync_attempts_total[15m])), 0.001)
+  - name: acvjepa_training_alerts
+    rules:
+      - alert: ACVJEPAUpdatePlanConsensusLost
+        expr: min by (cluster, job, environment) (acvjepa_training_plan_digest_consensus) == 0
+        for: 1m
+        labels:
+          severity: critical
+          action: freeze_new_plans_and_investigate
+        annotations:
+          summary: "AC-VJEPA UpdatePlan digest consensus lost"
+          runbook: "Investigate plan/topology/work-manifest digest mismatch; do not enter backward or retry the old plan."
+      - alert: ACVJEPAPreparedCursorStuck
+        expr: acvjepa_training_cursor_reservations > 0 and on (cluster, job, environment) increase(acvjepa_training_checkpoint_commits_total[10m]) == 0
+        for: 10m
+        labels:
+          severity: warning
+          action: inspect_attempt_and_checkpoint_ledger
+        annotations:
+          summary: "Prepared data cursor reservation did not commit"
+          runbook: "Inspect the attempt ledger. Confirm whether the update is uncommitted, then abort/recover only from the last committed checkpoint."
+      - alert: ACVJEPACommittedCheckpointStale
+        expr: acvjepa_training_checkpoint_age_seconds > 900
+        for: 10m
+        labels:
+          severity: warning
+          action: investigate_checkpoint_pipeline
+        annotations:
+          summary: "Latest committed checkpoint is stale"
+          runbook: "Threshold is an example; calibrate to the approved lost-work budget and checkpoint cadence."
+      - alert: ACVJEPARendezvousRebuildStorm
+        expr: sum by (cluster, job, environment) (increase(acvjepa_training_rendezvous_rebuilds_total[15m])) > 2
+        for: 1m
+        labels:
+          severity: critical
+          action: stop_automatic_restarts_and_escalate
+        annotations:
+          summary: "Repeated Rendezvous rebuilds exceed the allowed test/production budget"
+          runbook: "Freeze new UpdatePlans, preserve NCCL/PyTorch/RAS evidence and escalate to infrastructure owners."
+      - alert: ACVJEPAExactStateRestoreFailed
+        expr: min by (cluster, job, environment) (acvjepa_training_state_alignment_verified{component=~"model|ema|optimizer|rng"}) < 1
+        for: 0m
+        labels:
+          severity: critical
+          action: block_training_resume
+        annotations:
+          summary: "Committed checkpoint state did not restore exactly"
+          runbook: "Do not execute the next update. Verify checkpoint hash, precision contract, optimizer implementation and restore code."
+      - alert: ACVJEPAFP8MetadataRestoreFailed
+        expr: acvjepa_training_fp8_metadata_verified < 1 and on (cluster, job, environment) acvjepa_training_build_info{precision_mode="fp8"} == 1
+        for: 0m
+        labels:
+          severity: critical
+          action: block_training_resume
+        annotations:
+          summary: "FP8 scale/AMAX metadata was not restored under the expected backend contract"
+          runbook: "Verify Transformer Engine/backend version and all required _extra_state keys before resume."
+      - alert: ACVJEPAAllReduceTailLatencyHigh
+        expr: job:acvjepa_training_allreduce_p95_seconds:5m > 0.5 and job:acvjepa_training_update_attempts:rate5m > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          action: observe_topology_and_network
+        annotations:
+          summary: "NCCL final AllReduce p95 exceeds approved baseline"
+          runbook: "Correlate rail, NCCL RAS, GPU/NIC health and UpdatePlan compute/network guard before changing timeouts."
+      - alert: ACVJEPAUpdateAbortRatioHigh
+        expr: job:acvjepa_training_update_abort_ratio:5m > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          action: inspect_uncommitted_attempts
+        annotations:
+          summary: "Too many distributed updates are aborting"
+          runbook: "Do not advance the cursor. Inspect data-contract failures, watchdog errors and rank skew."
+      - alert: ACVJEPAFailpointRecoveryTailHigh
+        expr: max by (cluster, job, environment) (job:acvjepa_training_failpoint_recovery_p95_seconds:30m) > 300
+        for: 5m
+        labels:
+          severity: warning
+          action: freeze_new_plans_and_review_recovery_budget
+        annotations:
+          summary: "Failpoint recovery p95 exceeds the provisional trusted-recovery budget"
+          runbook: "Threshold is an example. Correlate the bounded fault class, checkpoint-load tier, topology and state-verification phases before changing admission or cache concurrency."
+      - alert: ACVJEPACacheIntegrityFailure
+        expr: sum by (cluster, job, environment) (job:acvjepa_training_checkpoint_cache_integrity_failures:rate5m) > 0
+        for: 0m
+        labels:
+          severity: critical
+          action: disable_suspect_cache_tier_and_verify_durable_checkpoint
+        annotations:
+          summary: "Verified checkpoint cache returned an integrity-invalid entry"
+          runbook: "Freeze new plans, keep the committed pointer unchanged, evict the suspect cache tier and restore only from verified durable shards."
+      - alert: ACVJEPACacheStampedeRisk
+        expr: |
+          (job:acvjepa_training_checkpoint_cache_hit_ratio:5m{cache_tier=~"node_local|rdma"} < 0.85)
+          and on (cluster, job, environment, cache_tier, component_class)
+          (sum by (cluster, job, environment, cache_tier, component_class) (rate(acvjepa_training_checkpoint_cache_fetches_total{outcome=~"hit|miss|fallback"}[5m])) > 0.1)
+        for: 10m
+        labels:
+          severity: warning
+          action: freeze_new_recovery_admissions_and_review_cache_budget
+        annotations:
+          summary: "Verified checkpoint cache hit ratio is below the provisional stampede-protection floor"
+          runbook: "Confirm this is not an idle or planned cold-start window. Correlate single-flight waiters, durable fallback p95, cache tier health and checkpoint load slots; do not weaken hash or pointer validation."
+      - alert: ACVJEPADurableFallbackTailHigh
+        expr: job:acvjepa_training_checkpoint_durable_fallback_p95_seconds:5m > 5
+        for: 10m
+        labels:
+          severity: warning
+          action: reduce_recovery_admission_and_investigate_storage_path
+        annotations:
+          summary: "Durable checkpoint fallback p95 exceeds provisional recovery budget"
+          runbook: "Inspect object/parallel-store latency, load slots, cache integrity events and node/rail locality before changing concurrency. Threshold must be calibrated per checkpoint size and storage tier."
+      - alert: ACVJEPARestorationDeploymentInputsInvalid
+        expr: acvjepa_training_recovery_deployment_inputs_valid == 0
+        for: 1m
+        labels:
+          severity: critical
+          action: freeze_recovery_and_deployment_and_preserve_bindings
+        annotations:
+          summary: "RecoveryDeploymentEpoch binding is invalid"
+          runbook: "Block training and GitOps reconciliation for this workload. Compare durable checkpoint, cursor commit, precision contract, topology/plan epoch and desired Git revision in the arbitration ledger."
+      - alert: ACVJEPAGitOpsRevisionDriftDuringRecovery
+        expr: |
+          (acvjepa_training_recovery_git_revision_match == 0)
+          and on (cluster, job, environment)
+          (acvjepa_training_recovery_deployment_state{state=~"RECOVERY_READY|DEPLOYMENT_ARMED"} == 1)
+        for: 1m
+        labels:
+          severity: critical
+          action: freeze_gitops_apply_and_require_fenced_reconciliation
+        annotations:
+          summary: "GitOps desired revision drifted during an armed recovery"
+          runbook: "Do not apply either revision. Create a new RecoveryDeploymentEpoch after confirming checkpoint/cursor/state validation against the selected desired revision."
+      - alert: ACVJEPARendezvousGitOpsFencingConflict
+        expr: sum by (cluster, job, environment) (job:acvjepa_training_recovery_deployment_fence_rejections:rate5m) > 0
+        for: 0m
+        labels:
+          severity: critical
+          action: freeze_concurrent_writers_and_escalate_control_plane
+        annotations:
+          summary: "Stale recovery or GitOps writer was fenced"
+          runbook: "This is evidence of a concurrent-writer boundary. Preserve Lease/arbitration ledger/GitOps reconcile evidence; do not retry with the old generation."
+      - alert: ACVJEPARecoveryDeploymentFrozenTooLong
+        expr: |
+          (acvjepa_training_recovery_deployment_state{state="FROZEN"} == 1)
+          and on (cluster, job, environment)
+          (acvjepa_training_recovery_deployment_state_age_seconds > 900)
+        for: 10m
+        labels:
+          severity: warning
+          action: require_human_recovery_deployment_arbitration
+        annotations:
+          summary: "RecoveryDeploymentEpoch has remained frozen beyond the provisional human-response budget"
+          runbook: "Review root cause and evidence. Unfreeze only by creating a new generation with verified inputs; never toggle a stale state in place."
+      - alert: ACVJEPAGitOpsChangeDeferredTooLong
+        expr: acvjepa_training_gitops_pending_age_seconds > 900
+        for: 10m
+        labels:
+          severity: warning
+          action: review_pending_change_and_recovery_interlock
+        annotations:
+          summary: "GitOps desired change has waited behind recovery arbitration too long"
+          runbook: "Confirm the change should remain deferred rather than bypassing the gate. Escalate if recovery evidence or desired revision cannot be reconciled."
+      - alert: ACVJEPAMetricsTargetMissing
+        expr: absent_over_time(acvjepa_training_plan_digest_consensus[5m])
+        for: 5m
+        labels:
+          severity: warning
+          action: verify_observability_path
+        annotations:
+          summary: "Training control-plane metrics have disappeared"
+          runbook: "Differentiate a healthy completed job from exporter/scrape failure using job lifecycle and ledger events."

@@ -4,6 +4,6 @@ __pycache__/
 .venv/
 venv/
 verify_artifacts/
-monitoring/
 *.egg-info/
 .pytest_cache/
+artifacts-compose/
