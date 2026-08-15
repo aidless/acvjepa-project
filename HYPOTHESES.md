@@ -2,6 +2,7 @@
 
 > 建立日期：2026-08-15 ｜ 来源：从「LLM 是否死胡同」路线之争与 AC-VJEPA 工程体系中提炼。
 > 与 `PROJECT_PLAN.md` 的关系：**H1/H0 是主判定**（轻量 JEPA 是否优于冻结特征基线）；本文件是围绕主判定的细分假设，
+> 情景化上层见 `BLUEPRINT.md`（把本文件的假说组合成分支树与决策门，纯推演、不执行实验）。
 > 每条独立编号、可证伪、可预注册。验证纪律：**验证前在 `决策记录.md` 登记，不得事后修改指标**（同 `M3_MPC_EVALUATION_DESIGN.md` v1 原则）。
 > 状态：`proposed`（待验证）/ `preregistered`（已登记）/ `tested`（有结果）/ `refuted` / `supported`。
 
