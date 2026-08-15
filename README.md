@@ -76,13 +76,14 @@ torchrun --standalone --nproc_per_node=2 test_dynamic_nccl_full_state_equivalenc
 | `PROJECT_PLAN.md` | **主计划**：从路线之争到可运行实验体系（M0–M5 里程碑与门禁） |
 | `DATA_MANIFEST.md` | 四层数据金字塔清单（A 官方权重 / B 本地视频 / C RoboCasa / D 真实轨迹） |
 | `vjepa_backbone.py` + `vjepa_backbone_smoke.py` | **M1 交付**：官方 V-JEPA 2 权重适配器（frozen/last_k/lora/finetune）+ 冒烟 |
+| `robocasa_adapter.py` / `video_to_windows.py` / `assemble_m2_dataset.py` | **M2 数据装配**：RoboCasa 采集适配器 / B 层视频切窗 / 端到端装配（portable synthetic 可验证） |
 | `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 当前状态 / 待办分级 / 验证结果 |
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `C9_AMI_JEPA_更新核验_2026-08-15.md` | AMI/JEPA 最新动态核验（ICML 2026 等） |
 
 ## 验证基线与待办
 
-- 验证结果与逐项证据见 `VERIFY_RESULTS.md`（由 `verify_all.ps1` 重跑可刷新）。基线含：单元测试 5、独立冒烟 22、配置校验 6、Gloo 双进程 4、容器/契约 4+1、**HF 真实权重训练冒烟 2（demo 数据 + checkpoint 落盘，权重存在时）**。
+- 验证结果与逐项证据见 `VERIFY_RESULTS.md`（由 `verify_all.ps1` 重跑可刷新）。基线含：单元测试 5、独立冒烟 22、配置校验 6、Gloo 双进程 4、容器/契约 4+1、**HF 真实权重训练冒烟 2（demo 数据 + checkpoint 落盘，权重存在时）**、**M2 数据装配 4（RoboCasa 契约 / B 层切窗 / 端到端装配）**。
 - Gloo 双进程回归在本机使用 `scripts/manual_gloo_runner.py`（torchrun 的 elastic agent 会触发本机页文件限制）。
 - HF 真实权重路径：`weights/vjepa2.1-vitb-fpc64-384/model.safetensors`（见 `DATA_MANIFEST.md`）；`--init-from vjepa2hf:<path>[:frozen|finetune]`。
 - 未决事项按「本机可做 / 需真实集群硬件 / 需外部系统审批」三级见 `BACKLOG.md`；B 级项的执行步骤见 `CLUSTER_VALIDATION_RUNBOOK.md`。

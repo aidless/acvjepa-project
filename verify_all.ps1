@@ -175,6 +175,17 @@ if (Test-Path $hfCkpt) {
     Write-Host "[SKIP] hf.* (weights missing)"
 }
 
+# --- I. M2 data assembly pipeline (B/C layers -> windows; portable synthetic) -------
+# RoboCasa adapter contract + B-layer video cutting + end-to-end assembly all run
+# with the portable synthetic backend, so they work on any host without the sim stack.
+Run-Check 'm2.robocasa_adapter_contract' @('robocasa_adapter.py',(Join-Path $root 'verify_artifacts/robocasa_contract')) -TimeoutSec 300
+$bClips = Join-Path $root 'verify_artifacts/b_layer_clips'
+$makeClips = Join-Path $root 'scripts/make_synthetic_clips.py'
+Run-Check 'm2.make_b_layer_clips' @($makeClips,$bClips) -TimeoutSec 120
+Run-Check 'm2.video_to_windows' @('video_to_windows.py','--video-dir',$bClips,'--output',(Join-Path $root 'verify_artifacts/b_layer_windows'),'--context-steps','4','--horizon','4','--height','64','--width','96') -TimeoutSec 300
+Run-Check 'm2.assemble_dataset' @('assemble_m2_dataset.py','--repo',$root,'--output',(Join-Path $root 'verify_artifacts/m2_assembly'),'--simulator','synthetic','--video-dir',$bClips,'--height','64','--width','96') -TimeoutSec 300
+Remove-Item $bClips -Recurse -Force -ErrorAction SilentlyContinue
+
 Write-Host ''
 Write-Host '=== SUMMARY ==='
 Get-Content $summary

@@ -2,6 +2,14 @@
 
 > 快照时间：2026-08-15（接管日 + M1）。验证结果明细以 `VERIFY_RESULTS.md` 为准；里程碑见 `PROJECT_PLAN.md`。
 
+## M2 数据装配工具链（2026-08-15）— ✅ 完成（I 组 4 项 PASS）
+
+- `robocasa_adapter.py`：RoboCasa 采集适配器（`SimulatorAdapter` 契约；`--simulator robocasa` 接口就绪；本机 portable synthetic 契约冒烟；真实采集需 sim 环境）。
+- `video_to_windows.py`：B 层无标签视频 → 域适配窗口（零动作/事件 + `domain_adaptation_only` 标记；`WindowEpisodeDataset` 可直读）。
+- `assemble_m2_dataset.py`：端到端装配——C 层 episode→commit→windows + B 层窗口 + split 隔离校验（按 clip/job）+ DATA_MANIFEST 登记。
+- `scripts/make_synthetic_clips.py`：合成 B 层帧（仅冒烟用）。
+- 待办：真实 RoboCasa/Isaac 环境装配（`--simulator robocasa`）与 B 层实拍视频采集。
+
 ## M1 实验基座（2026-08-15）— ✅ 完成（PROJECT_PLAN 里程碑）
 
 - `vjepa_backbone.py`：官方 V-JEPA 2 ViT-B/16 权重适配器（键重映射：`encoder.`/`backbone.` 前缀剥离、qkv 合并/拆分、`patch_embed` 别名；微调模式 frozen/last_k/lora/finetune；LoRA 低秩适配；安装时同步替换 student+EMA frame_encoder）。
@@ -17,7 +25,7 @@
 - 11 页 PPT（`杨立昆、世界模型与 AMI Labs.pptx`）与讲稿（`slide_content.md`）完成。
 - 深度报告 5 份（数据算力瓶颈、轻量 V-JEPA 实验路线、架构本质区别、开源 JEPA-Agent 清单、jepa-wms 仓库笔记）。
 
-## 阶段二：AC-VJEPA 工程（2026-08-15）— ✅ 代码与文档完成；验证基线全绿（44/44）
+## 阶段二：AC-VJEPA 工程（2026-08-15）— ✅ 代码与文档完成；验证基线全绿（48/48）
 
 - 训练核心：`ac_vjepa_core.py`（CPU 冒烟已跑通：训练步/EMA/NORMAL/LOCAL_HOLD→LLM_SUPERVISION）、`train_ac_vjepa_ddp.py`（DDP/torchrun/Gloo）、`dynamic_nccl_update_plan_train.py`、`topology_aware_update_plan.py`。
 - 弹性恢复与一致性：混合精度恢复、数据游标账本、Rendezvous—GitOps 仲裁、快速重建告警、RDMA/rail 守卫。
@@ -36,7 +44,7 @@
   - 6 个配置校验全过（还原目录结构后）；
   - **Gloo 双进程语义回归 4/4 全过**（`scripts/manual_gloo_runner.py` 手工双进程，绕开 torchrun 页文件限制）：train/topology/full_state(118+118)/integration；
   - Docker compose 全流程实测：build→up 3 容器 Healthy→chaos-ci profile 容器内跑离线契约→down；
-  - **验证基线：44/44 全绿**（2026-08-15 最终，含 H 组 HF 真实权重训练冒烟）。
+  - **验证基线：48/48 全绿**（2026-08-15 最终，含 H 组 HF 训练冒烟 + I 组 M2 数据装配）。
 - 已知环境障碍：pytest 全局 deepeval 插件损坏 → 统一用 `python -m unittest`；torch 2.5.1 Windows 无 libuv → `USE_LIBUV=0`；torchrun elastic agent 在本机页文件限制下不可用 → 用 manual_gloo_runner。
 
 ## 接管期修复（均已记录于决策记录，逻辑未变）

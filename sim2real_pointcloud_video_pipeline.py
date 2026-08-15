@@ -335,15 +335,31 @@ def main() -> None:
     parser.add_argument("--job-manifest")
     parser.add_argument("--demo", action="store_true")
     parser.add_argument("--max-points", type=int, default=1024)
+    parser.add_argument(
+        "--simulator",
+        choices=["synthetic", "robocasa"],
+        default="synthetic",
+        help=(
+            "which SimulatorAdapter to use. 'synthetic' runs the portable contract "
+            "backend (never train on it). 'robocasa' requires the robocasa package "
+            "installed on a GPU/display host; rollout() raises a clear error otherwise."
+        ),
+    )
     args = parser.parse_args()
     if bool(args.job_manifest) == bool(args.demo):
         raise SystemExit("provide exactly one of --job-manifest or --demo")
 
-    # Use SyntheticDeformableBackend only to validate the artifact contract.
-    # In a real run, select a pinned IsaacLabAdapter/RoboCasaAdapter based on the
-    # job's simulator field and record the actual simulator runtime version.
-    adapter: SimulatorAdapter = SyntheticDeformableBackend()
-    jobs = [demo_job()] if args.demo else load_jobs(Path(args.job_manifest))
+    if args.simulator == "robocasa":
+        from robocasa_adapter import RoboCasaAdapter, demo_robocasa_job
+
+        adapter: SimulatorAdapter = RoboCasaAdapter()
+        jobs = [demo_robocasa_job()] if args.demo else load_jobs(Path(args.job_manifest))
+    else:
+        # Use SyntheticDeformableBackend only to validate the artifact contract.
+        # In a real run, select a pinned IsaacLabAdapter/RoboCasaAdapter based on the
+        # job's simulator field and record the actual simulator runtime version.
+        adapter = SyntheticDeformableBackend()
+        jobs = [demo_job()] if args.demo else load_jobs(Path(args.job_manifest))
     writer = EpisodeWriter(Path(args.output), max_points=args.max_points)
     manifest: List[Dict[str, Any]] = []
     for job in jobs:

@@ -64,4 +64,5 @@
 |---|---|---|
 | 2026-08-15 | M1：`vjepa_backbone.py` 适配器 + `vjepa_backbone_smoke.py`（随机初始化路径） | 完成（smoke PASS） |
 | 2026-08-15 | A 层官方权重下载（438.9 MB，SHA 见上） | **完成**（下载 + HF 真实加载验证 PASS，391/395 键） |
-| 2026-08-15 | B 层采集、C 层 RoboCasa 装配 | 待执行（M2 前置） |
+| 2026-08-15 | **M2 数据装配工具链**：`robocasa_adapter.py`（RoboCasa 采集适配器，portable synthetic 契约）、`video_to_windows.py`（B 层无标签视频 → 域适配窗口）、`assemble_m2_dataset.py`（端到端装配 + split 隔离 + DATA_MANIFEST 登记）、`scripts/make_synthetic_clips.py`（合成 B 层帧） | **完成**（I 组 4 项 PASS，48/48 全绿） |
+| 2026-08-15 | B 层真实采集、C 层 RoboCasa 装配（需 sim 环境） | 待执行（M2 训练前置；`--simulator robocasa` 接口已就绪） |
