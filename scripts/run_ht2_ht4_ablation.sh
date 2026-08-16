@@ -7,14 +7,11 @@
 #
 # 用法:
 #   bash scripts/run_ht2_ht4_ablation.sh <repo_root> <manifest> <weights_safetensors> <out_root> [epochs] [seeds]
-# 示例(云端):
-#   bash scripts/run_ht2_ht4_ablation.sh /root/autodl-tmp/acvjepa-project \
-#     /root/autodl-tmp/acvjepa-project/demo_ddp_data_800/manifest.jsonl \
-#     /root/autodl-tmp/acvjepa-project/weights/vjepa2.1-vitb-fpc64-384/model.safetensors \
-#     /root/autodl-tmp/ablation_ht2_ht4 30 "2026 2027 2028"
+# 环境变量: BATCH_SIZE (默认 2, 共享实例显存受限时用), CONDA_ENV (默认 acvjepa)
 set -euo pipefail
 
 REPO="$1"; MANIFEST="$2"; WEIGHTS="$3"; OUT="$4"; EPOCHS="${5:-30}"; SEEDS="${6:-2026 2027 2028}"
+BATCH_SIZE="${BATCH_SIZE:-2}"
 CONDA_ENV="${CONDA_ENV:-acvjepa}"
 
 if [ -f "$(conda info --base)/etc/profile.d/conda.sh" ]; then
@@ -24,23 +21,27 @@ fi
 
 mkdir -p "$OUT"
 SUMMARY="$OUT/summary.tsv"
-echo -e "tag\tfinal_latent_nll\twindows" > "$SUMMARY"
+[ -f "$SUMMARY" ] || echo -e "tag\tfinal_latent_nll\twindows" > "$SUMMARY"
 
 run_one () {
   local tag="$1"; shift
   local log="$OUT/$tag.log"
   echo "[$(date +%H:%M:%S)] START $tag"
-  python "$REPO/train_p1_domain_adapt.py" \
-    --manifest "$MANIFEST" --output "$OUT/$tag" --epochs "$EPOCHS" \
-    --init-from "vjepa2hf:$WEIGHTS:frozen" --init-img-size 384 \
-    --per-rank-batch-size 4 --gradient-accumulation 4 \
-    "$@" > "$log" 2>&1
-  local nll
-  nll=$(grep '"loss_latent_nll"' "$log" | tail -1 | python -c "import sys,json; print(json.loads(sys.stdin.read())['loss_latent_nll'])")
-  local wins
-  wins=$(python -c "import json; print(json.loads(open('$log').readline())['windows'])")
-  echo -e "$tag\t$nll\t$wins" >> "$SUMMARY"
-  echo "[$(date +%H:%M:%S)] DONE $tag nll=$nll"
+  if python "$REPO/train_p1_domain_adapt.py" \
+      --manifest "$MANIFEST" --output "$OUT/$tag" --epochs "$EPOCHS" \
+      --init-from "vjepa2hf:$WEIGHTS:frozen" --init-img-size 384 \
+      --per-rank-batch-size "$BATCH_SIZE" --gradient-accumulation 4 \
+      "$@" > "$log" 2>&1; then
+    local nll wins
+    # 首行可能是 [vjepa_backbone] 非 JSON 行; 用 JSON header 行定位 windows
+    nll=$(grep '"loss_latent_nll"' "$log" | tail -1 | python -c "import sys,json;print(json.loads(sys.stdin.read())['loss_latent_nll'])" 2>/dev/null || echo NA)
+    wins=$(grep '"mode": "p1_domain_adapt"' "$log" | head -1 | python -c "import sys,json;print(json.loads(sys.stdin.read())['windows'])" 2>/dev/null || echo NA)
+    echo -e "$tag\t$nll\t$wins" >> "$SUMMARY"
+    echo "[$(date +%H:%M:%S)] DONE $tag nll=$nll"
+  else
+    echo -e "$tag\tFAIL\tNA" >> "$SUMMARY"
+    echo "[$(date +%H:%M:%S)] FAIL $tag (see $log)"
+  fi
 }
 
 # H-T2: 投影头容量消融 (latent_dim = head 宽度)
