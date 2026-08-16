@@ -25,7 +25,7 @@
 | A16 | M3 评测设计文档 `M3_MPC_EVALUATION_DESIGN.md`（P3 闭环评测方案） | 复审计划步骤 4 | done | 已落盘：三基线/指标/统计/判定阈值/预注册约定 |
 | A17 | C9 季度跟踪机制写入（触发条件 + 检查清单） | 复审计划步骤 5 | done | 已追加至 C9 文档；下一轮 2026-11-15 |
 | A18 | D 层采集时点裁定（H-T1 的 M2 分档需 D 层数据 vs PROJECT_PLAN「D 层=P4」的源文档张力） | BLUEPRINT v2 §2.1 已知张力 | done | 已裁定（决策记录 2026-08-15）：D-mini（≤2h）随 P2；D-full（5–10h）于 G1∈{A,B1,B2} 后启动、C/B4 分支降级可选；PROJECT_PLAN L4/M2 行已同步 |
-| A19 | H-T2/H-T4 消融预注册登记（本机 6GB 可执行：H-T2=头容量 32/64/128/256 分档、H-T4=EMA vs 同步目标 A/B） | HYPOTHESES H-T2/H-T4；BLUEPRINT §3/G2 | done | 预注册登记完成（决策记录 2026-08-15，HYPOTHESES 状态 → preregistered）；**执行**待用户解除「不跑实验」约束 |
+| A19 | H-T2/H-T4 消融执行（预注册登记已完成 2026-08-15；本机 6GB 或云端 48GB） | HYPOTHESES H-T2/H-T4；BLUEPRINT §3/G2 | in_progress | **云端启动 2026-08-16**（AutoDL 3090 48GB，`scripts/run_ht2_ht4_ablation.sh`，H-T2 12 runs + H-T4 6 runs）；结果写回 HYPOTHESES（supported/refuted） |
 | A20 | H-M1 开源接力观察（观察窗 2026-08-15 → 2027-02-15） | HYPOTHESES H-M1；BLUEPRINT §3/G4 | in_progress | 预注册判据：≥1 名持 GPU 外部研究者 fork/PR 并执行 M3 评测（或同类）；fork/PR/issue 动态为辅助信号 |
 | A21 | C9 下一轮核验（2026-11-15 前后） | C9 跟踪机制；BLUEPRINT §3 | done | **提前轮（第二轮）+ 第三轮已执行**（2026-08-15 晚，用户指示）：见 C9 文档「第二轮/第三轮核验」小节；正式下一轮仍 2026-11-15（含三梯队终止率计数） |
 | A22 | vla-evaluation-harness 对接评估：M3 评测包注册 RoboCasa 集成的可行性 + 统计层边界（harness 只保证可复现，ECE 分层/检验/失败归因仍自建） | WAM 生态学习批次（2026-08-15） | open | 学习报告 §五；结论后置 done |

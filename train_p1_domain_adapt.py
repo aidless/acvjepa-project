@@ -67,6 +67,10 @@ class DomainAdaptConfig(TrainConfig):
 
 
 def build_domain_adapt_config(args: argparse.Namespace) -> DomainAdaptConfig:
+    # H-T4 sync arm: momentum 0.0 => target 每步硬拷贝 student head (无平滑)。
+    # EMA 公式 target = m*target + (1-m)*source (ac_vjepa_core.EMAStateEncoder)，
+    # 对应预注册 A/B 的 B 臂（同步目标）。
+    effective_ema_momentum = 0.0 if args.ema_target == "sync" else args.ema_momentum
     return DomainAdaptConfig(
         manifest=args.manifest,
         output=args.output,
@@ -79,7 +83,7 @@ def build_domain_adapt_config(args: argparse.Namespace) -> DomainAdaptConfig:
         max_horizon=args.max_horizon,
         init_from=args.init_from,
         init_img_size=args.init_img_size,
-        ema_momentum=args.ema_momentum,
+        ema_momentum=effective_ema_momentum,
         ema_broadcast_interval=args.ema_broadcast_interval,
         save_interval_steps=args.save_interval_steps,
         log_interval_steps=args.log_interval_steps,
@@ -266,6 +270,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--init-from", help="vjepa2:<path>[:mode] or vjepa2hf:<path>[:frozen|finetune]")
     parser.add_argument("--init-img-size", type=int, default=384)
     parser.add_argument("--ema-momentum", type=float, default=0.996)
+    parser.add_argument(
+        "--ema-target",
+        choices=["ema", "sync"],
+        default="ema",
+        help="H-T4 A/B (preregistered 2026-08-15): ema=EMA target (momentum 0.996 default), "
+        "sync=hard-copy sync target (momentum 0.0, no smoothing)",
+    )
     parser.add_argument("--ema-broadcast-interval", type=int, default=100)
     parser.add_argument("--save-interval-steps", type=int, default=1000)
     parser.add_argument("--log-interval-steps", type=int, default=50)
