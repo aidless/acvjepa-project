@@ -33,7 +33,7 @@
 | A24 | 生态清单补录与核对：`jepa_agent_project_findings.md` 补 INTACT/LeWorldModel/W2-VLA/worldmodels_ros2 + JEPA-WAM 10780 区分；核对清单闭环（VLA-JEPA ECCV/LICENSE、W2-VLA LICENSE、JEPA-WAM 零样本声称、vla-eval 榜单口径） | WAM 生态学习批次 | done | **补录（2026-08-16）+ 云端实抓核验（2026-08-16）**：W2-VLA=MIT ✅、JEPA-WAM 摘要无零样本声称 ✅、VLA-JEPA 仓库无 LICENSE 文件 ⚠️（README 徽章/ECCV 待一手）、vla-eval README leaderboard 存在 ✅（榜单数字复核待后续） |
 | A25 | C9 核验新增「多种子稳定性」项（Seed Lottery 1/13 vs 0/21；上游 checkpoint ≥5 种子复现） | WAM 生态学习批次（2606.13856） | done | 检查清单已固化（2026-11-15 正式轮生效） |
 | A26 | H-T2/H-T4 真实 B 层数据复验（同口径 `run_ht2_ht4_ablation.sh` + `analyze_ht2_ht4.py`；结果决定 G2 定案） | 决策记录 2026-08-16（消融结果局限） | blocked | 前置=真实 B 层数据采集/许可（外部依赖，暂无） |
-| A27 | RoboCasa 云端部署（M3 评测环境前置）：Isaac Gym/依赖 + 21.4GB 镜像 + vla-eval 底座；评估结论=现装无评测对象（C 组模型未就绪） | 决策记录 2026-08-16（A22 对接 + 部署评估） | blocked | 与 M2 真实训练启动绑定：B/C 层数据就绪 → 训练 C 组 → 部署 RoboCasa → 接 `m3_mpc_eval.py` 真实排序器 |
+| A27 | RoboCasa 云端部署（M3 评测环境前置）：Isaac Gym/依赖 + 21.4GB 镜像 + vla-eval 底座；评估结论=现装无评测对象（C 组模型未就绪） | 决策记录 2026-08-16（A22 对接 + 部署评估） | blocked | **硬阻塞确认 2026-08-17**：①acvjepa 环境 Python 3.12（IsaacGym/RoboCasa 需 ≤3.10，pip 无匹配发行版）；②磁盘 200G 已满（331M 空闲，另一会话占满）。需专用 AutoDL Isaac 镜像 + 独立 ≤3.10 环境 + 释放磁盘；M3 对接面已就绪（`scripts/m3_vla_eval_dock.py`） |
 | A28 | P2 动作条件后训练（工程验证）+ M3 骨架 × 真实权重 chain-live 演示（云端） | 决策记录 2026-08-17（全部在云端做） | done | **完成**：600 窗口结构化数据 → P2 20 epochs（loss −1.27）→ live demo（A 0.0/B 0.20/C 0.067，C 校准最优 ECE 0.027 + 时间轴上升）；证据 `experiments/p2_chain_live_2026-08-17/`；链路验证不进入假设判定 |
 | A29 | H-D1 失败轨迹价值假设（合成链路级，云端执行） | 决策记录 2026-08-17（H-D1 预注册） | done | **完成 2026-08-17**：全成功 vs 30% 失败注入 → 双 P2 训练 + 双 ImageReach 评测（20 rollout 配对）；结果=两模型成功率均 0.05、配对 p=1.0 → **refuted（合成链路级，地板效应局限）**；证据 `experiments/hd1_2026-08-17/` |
 
