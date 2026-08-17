@@ -174,9 +174,10 @@ def _rollout_scores(module, state0, goal, acts: np.ndarray) -> np.ndarray:
     future = state[:, None, :] + module.latent_delta(out)  # [N,T,D]
     logvar = module.log_variance_head(out).clamp(-8.0, 6.0)  # [N,T,D]
     goal_b = goal.unsqueeze(0).expand(n, -1)
-    d2 = (future[:, -1] - goal_b).square().sum(-1)  # [N]
-    var = logvar[:, -1].exp()  # [N]
-    return (-d2 / var).cpu().numpy()
+    err = (future[:, -1] - goal_b) ** 2            # [N,D]
+    var = logvar[:, -1, :].exp()                   # [N,D]
+    score = -(err / var).sum(-1)                   # [N] 逐维方差加权距离
+    return score.cpu().numpy()
 
 
 class LiveController:
