@@ -69,7 +69,7 @@ python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
 | `分布式训练监控、混合精度恢复与生产演练 SOP.md` | 监控 SOP |
 | `Kubernetes 生产监控阈值与 Rendezvous—GitOps 并发仲裁手册.md` | 生产仲裁 |
 | `DATA_MANIFEST.md` | 四层数据金字塔清单（A 官方权重 / B 本地视频 / C RoboCasa / D 真实轨迹） |
-| `M3_MPC_EVALUATION_DESIGN.md` | **M3 评测预注册（v1.1）**：P3 MPC 对比的基线/指标/统计/判定阈值 + 校准分层（H-T3）+ 失败归因（H-R1）+ 模型卡 |
+| `M3_MPC_EVALUATION_DESIGN.md` | **M3 评测预注册（v1.2）**：P3 MPC 对比的基线/指标/统计/判定阈值 + 校准分层（H-T3）+ 失败归因（H-R1）+ 模型卡 + ECE 时间轴分解/复现判定列（v1.2 扩展） |
 | `HYPOTHESES.md` | **猜想假设集**：五层 11 条细分假设（路线/技术/数据/生态/元层）+ 预注册流程 |
 | `BLUEPRINT.md` | **宏大蓝图**：十年推演总纲（纯思辨，无实验）——判定网络、A/B/C 分支树、X/Y/Z 终局、时间信号、决策门 |
 | `WAM生态学习报告_2026-08-15.md` | 外部生态学习（12 项仓库/论文）：VLA-JEPA/INTACT/LeWorldModel/vla-evaluation-harness/LeRobot/Seed Lottery 等 + 15 条精华模式与落地储备（A22–A25） |

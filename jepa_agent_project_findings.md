@@ -63,3 +63,18 @@
 15. https://github.com/NoctYang/Auto-JEPA
 16. https://arxiv.org/abs/2607.29031
 17. https://arxiv.org/abs/2603.25981
+
+## WAM 生态学习批次补录（2026-08-15，详见 `WAM生态学习报告_2026-08-15.md`）
+
+> ⚠️ **JEPA-WAM 同名论文冲突（重要，引用必须带 arXiv 号）**：
+> - **arXiv:2608.09381**（Lin et al.，本清单原「JEPA-WAM / Lin et al.」条目）——V-JEPA 空间共享预测器，LIBERO-Plus 79.2%，π0.5 实例化 86.3%；
+> - **arXiv:2608.10780v2**（Motus WAM + Stage-JEPA）——冻结 V-JEPA2 预测「下一任务阶段」潜在目标，RoboTwin 2.0 90.25%，成功步数 -5.97%；**无公开仓库/权重**；「零样本部署」声称未见于摘要（待核对全文）。
+
+| 项目/团队 | 初步分级 | 已确认事实 | 暂定判断 |
+|---|---|---|---|
+| INTACT-JEPA / `zju3dv/INTACT-JEPA` | A（免搜索世界模型控制器） | 浙大/清华 AIR/InSpatio/RoboParty Lab；arXiv:2607.26056；MIT；151★；72 个受控 checkpoint + REPRODUCIBILITY.md 契约；1 epoch Direct 95.33%；四接口受控对照（Direct/Pure-CEM/Actor-CEM/Guarded-A）。 | 「意图→动作律同构、零搜索读出」——对本项目 H-T2/H-R1 与 M3 评测设计最直接；发布纪律（72 checkpoint）是预注册样板。 |
+| LeWorldModel / `lucas-maes/le-wm` | B（端到端 JEPA 研究平台） | arXiv:2603.19312；MIT；4308★；~15M 参数、两损失（投影头正则防坍塌）、单卡从头端到端；stable-worldmodel CEM/MPC 栈。 | 「从头端到端轻量」= 冻结骨干路线的 A/B 对照臂；CEM 栈可作 M3 A 组基线参考实现。 |
+| W2-VLA / `yyyyu120/W2-VLA` | A（研究原型，过新） | arXiv:2608.05369；21★；LICENSE NOASSERTION（待核对）；冻结 V-JEPA2.1 ViT-L/384 腕部编码器 + 任务条件未来腕部潜变量 + DiT 头；W2-CoT 离线进度标注。 | 仅作 H-R1（接口 tokens 注入）与金字塔第 4 层标注管线参考；成熟度低，不宜引用为可复现基线。 |
+| worldmodels_ros2 / `rsasaki0109/worldmodels_ros2` | B（集成层） | 9★；Apache-2.0；从 ROS 2 运行现有世界模型（运行时/适配器/基准/可视化）；图像目标检索动力学规划 + 自校准 surprise 监控。 | 吸收模式：无训练检索动力学基线（M3 A 组参考）、self-calibrated surprise 阈值（§4.2 自动化标注第一道闸）、Honest scope 声明文化。 |
+
+**待核验项（web 检索预算受限，2026-08-16 待补）**：VLA-JEPA 的 ECCV 2026 接收状态与仓库 LICENSE 文件（README 徽章 Apache-2.0）；W2-VLA LICENSE（NOASSERTION）；JEPA-WAM 10780 的「零样本部署」全文核对；vla-eval 榜单口径版本差异（README 2456 模型 vs 论文 657 结果）。
