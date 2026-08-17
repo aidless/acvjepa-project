@@ -81,4 +81,4 @@
 - ✅ **W2-VLA LICENSE=MIT**（StarVLA Team，GitHub 原始文件实核）——原「NOASSERTION（待核对）」解除；
 - ✅ **JEPA-WAM 10780v2 摘要实核：无「zero-shot」声称**——摘要只提「frozen V-JEPA2 encoder + Stage-JEPA 预测下一阶段的潜变量目标，RoboTwin 2.0 50 任务 90.25%、成功 rollout 步数 −5.97%」；
 - ⚠️ **VLA-JEPA 仓库根无 LICENSE 文件**（GitHub API license=null；README 上的 Apache-2.0 徽章与 ECCV 2026 接收状态只能一手确认）；
-- ⚠️ **vla-eval 榜单口径**：GitHub API 确认 README 含 leaderboard 部分；「README 2456 模型 vs 论文 657 结果」为学习批次当日摘录，榜单页复核待后续。
+- ⚠️ **vla-eval 榜单口径**：GitHub API 确认 README 含 leaderboard 部分；leaderboard/data 目录=**11 个基准结果文件**（2026-08-17 实抓）；「README 2456 模型 vs 论文 657 结果」为学习批次当日摘录，榜单页最终复核待后续。
