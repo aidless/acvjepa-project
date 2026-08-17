@@ -51,20 +51,30 @@ def _proprio(pos: np.ndarray) -> np.ndarray:
     return v
 
 
-def make_windows(n: int, seed: int = 2026) -> list[dict]:
+def make_windows(n: int, seed: int = 2026, failure_ratio: float = 0.0) -> list[dict]:
+    """生成 n 个窗口；failure_ratio ∈ [0,1] 决定多少比例窗口为「安全失败+恢复」轨迹。
+
+    H-D1（预注册 2026-08-17）：失败注入窗口的 3 步未来动作为 [away, toward, toward]——
+    先偏离 goal（安全失败片段）再回拉（恢复），模拟「失败+恢复」数据价值。
+    """
     rng = np.random.default_rng(seed)
     windows = []
-    for _ in range(n):
+    for i in range(n):
         pos = rng.uniform(60, IMG - 60, size=2)
         goal = rng.uniform(60, IMG - 60, size=2)
         while np.linalg.norm(goal - pos) < 120:
             goal = rng.uniform(60, IMG - 60, size=2)
         distractor = rng.uniform(60, IMG - 60, size=(3, 2))
 
-        # 未来 3 步动作（带噪声直线趋向 goal；幅度 STEP 像素）
-        acts = []
-        for _ in range(3):
-            delta = np.clip(goal - pos, -STEP, STEP)
+        is_failure = failure_ratio > 0.0 and rng.random() < failure_ratio
+        # 未来 3 步动作：失败注入 = [away, toward, toward]；否则全 toward
+        dirs = []
+        for step in range(3):
+            if is_failure and step == 0:
+                target = 2.0 * pos - goal  # 反方向参考点
+            else:
+                target = goal
+            delta = np.clip(target - pos, -STEP, STEP)
             if np.linalg.norm(delta) > 1e-6:
                 unit = delta / np.linalg.norm(delta)
                 noisy = unit + rng.normal(0.0, 0.25, size=2)
@@ -72,7 +82,8 @@ def make_windows(n: int, seed: int = 2026) -> list[dict]:
             else:
                 noisy = rng.normal(0.0, 0.3, size=2)
                 noisy = noisy / (np.linalg.norm(noisy) + 1e-9)
-            acts.append(noisy)
+            dirs.append(noisy)
+        acts = dirs
 
         # 回溯生成 4 帧上下文（从 pos 往前推 4 步的逆运动）
         conj = [pos]
@@ -121,13 +132,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default="p2_structured_data")
     parser.add_argument("--n", type=int, default=600)
+    parser.add_argument("--failure-ratio", type=float, default=0.0,
+                        help="H-D1：失败注入窗口比例（0=全成功，0.3=30% 失败+恢复）")
     args = parser.parse_args()
 
     root = Path(args.root)
     root.mkdir(parents=True, exist_ok=True)
     manifest = root / "manifest.jsonl"
     entries = []
-    windows = make_windows(args.n)
+    windows = make_windows(args.n, failure_ratio=args.failure_ratio)
     for i, w in enumerate(windows):
         path = root / f"window_{i:04d}.pt"
         torch.save(w, path)

@@ -232,6 +232,9 @@ def run_live(module, n_rollouts: int, n_candidates: int, seed0: int = 7) -> dict
     succ = {}
     for r in results:
         succ.setdefault(r.baseline, []).append(1.0 if r.success else 0.0)
+    # H-D1 配对需要：按 rollout 顺序的逐成功向量（不同模型同 env seed 序列）
+    per_rollout = {b: [1.0 if r.success else 0.0 for r in results if r.baseline == b]
+                   for b in succ}
     stats_cb = M3.stats_report({"image_reach": succ["C_light_jepa"]},
                                {"image_reach": succ["B_frozen_cosine"]})
     stats_ca = M3.stats_report({"image_reach": succ["C_light_jepa"]},
@@ -239,6 +242,7 @@ def run_live(module, n_rollouts: int, n_candidates: int, seed0: int = 7) -> dict
     rows = M3.build_result_rows(agg, "image_reach")
     return {
         "success_rates": {b: float(np.mean(succ[b])) for b in succ},
+        "per_rollout_success": per_rollout,
         "agg": agg,
         "rows": rows,
         "stats_C_vs_B": stats_cb,
@@ -303,6 +307,7 @@ def main() -> int:
         "n_rollouts": args.n_rollouts,
         "n_candidates": args.n_candidates,
         "success_rates": out["success_rates"],
+        "per_rollout_success": out["per_rollout_success"],
         "agg": {k: {kk: (round(vv, 6) if isinstance(vv, float) else vv)
                     for kk, vv in v.items() if kk != "ece_time_1_3"}
                 for k, v in out["agg"].items()},
