@@ -1,0 +1,3 @@
+[live] loading checkpoint /root/autodl-tmp/p2_structured_out/last.pt
+[vjepa_backbone] HF load report: loaded=391/395 skipped=12 missing=4 (predictor head dims differ; encoder keys fully covered)
+[live] backbone load keys=391

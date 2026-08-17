@@ -34,6 +34,7 @@
 | A25 | C9 核验新增「多种子稳定性」项（Seed Lottery 1/13 vs 0/21；上游 checkpoint ≥5 种子复现） | WAM 生态学习批次（2606.13856） | done | 检查清单已固化（2026-11-15 正式轮生效） |
 | A26 | H-T2/H-T4 真实 B 层数据复验（同口径 `run_ht2_ht4_ablation.sh` + `analyze_ht2_ht4.py`；结果决定 G2 定案） | 决策记录 2026-08-16（消融结果局限） | blocked | 前置=真实 B 层数据采集/许可（外部依赖，暂无） |
 | A27 | RoboCasa 云端部署（M3 评测环境前置）：Isaac Gym/依赖 + 21.4GB 镜像 + vla-eval 底座；评估结论=现装无评测对象（C 组模型未就绪） | 决策记录 2026-08-16（A22 对接 + 部署评估） | blocked | 与 M2 真实训练启动绑定：B/C 层数据就绪 → 训练 C 组 → 部署 RoboCasa → 接 `m3_mpc_eval.py` 真实排序器 |
+| A28 | P2 动作条件后训练（工程验证）+ M3 骨架 × 真实权重 chain-live 演示（云端） | 决策记录 2026-08-17（全部在云端做） | done | **完成**：600 窗口结构化数据 → P2 20 epochs（loss −1.27）→ live demo（A 0.0/B 0.20/C 0.067，C 校准最优 ECE 0.027 + 时间轴上升）；证据 `experiments/p2_chain_live_2026-08-17/`；链路验证不进入假设判定 |
 
 ## B. 需真实集群 / 硬件（本机 BLOCKED）
 

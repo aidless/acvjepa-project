@@ -1,0 +1,106 @@
+{
+  "demo": "m3_live_demo",
+  "checkpoint": "/root/autodl-tmp/p2_structured_out/last.pt",
+  "n_rollouts": 15,
+  "n_candidates": 32,
+  "success_rates": {
+    "A_random": 0.0,
+    "B_frozen_cosine": 0.2,
+    "C_light_jepa": 0.06666666666666667
+  },
+  "agg": {
+    "A_random": {
+      "n": 15,
+      "success_rate": 0.0,
+      "violation_rate": 0.0,
+      "replans_mean": 11.0,
+      "actions_mean": 12.0,
+      "ood_uncertainty": 1.0,
+      "ece": 0.05,
+      "failure_counts": {
+        "interface": 0,
+        "model": 0,
+        "execution": 15
+      },
+      "sim2real_gap": NaN
+    },
+    "B_frozen_cosine": {
+      "n": 15,
+      "success_rate": 0.2,
+      "violation_rate": 0.0,
+      "replans_mean": 10.533333,
+      "actions_mean": 11.533333,
+      "ood_uncertainty": 0.961768,
+      "ece": 0.098473,
+      "failure_counts": {
+        "interface": 0,
+        "model": 0,
+        "execution": 12
+      },
+      "sim2real_gap": NaN
+    },
+    "C_light_jepa": {
+      "n": 15,
+      "success_rate": 0.066667,
+      "violation_rate": 0.0,
+      "replans_mean": 10.8,
+      "actions_mean": 11.8,
+      "ood_uncertainty": 0.985185,
+      "ece": 0.026664,
+      "failure_counts": {
+        "interface": 0,
+        "model": 0,
+        "execution": 14
+      },
+      "sim2real_gap": NaN
+    }
+  },
+  "ece_time_1_3": {
+    "A_random": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "B_frozen_cosine": [
+      0.15,
+      0.162193,
+      0.194569
+    ],
+    "C_light_jepa": [
+      0.016667,
+      0.030252,
+      0.093441
+    ]
+  },
+  "stats_C_vs_B": {
+    "image_reach": {
+      "p": 0.31731050786291415,
+      "p_holm": 0.31731050786291415,
+      "significant": false,
+      "cohens_h": -0.4049803961955636,
+      "cliff_delta": -0.13333333333333333,
+      "cliff_delta_ci": [
+        -0.4,
+        0.13333333333333333
+      ]
+    }
+  },
+  "stats_C_vs_A": {
+    "image_reach": {
+      "p": 0.31731050786291415,
+      "p_holm": 0.31731050786291415,
+      "significant": false,
+      "cohens_h": 0.5223148218060486,
+      "cliff_delta": 0.06666666666666667,
+      "cliff_delta_ci": [
+        0.0,
+        0.2
+      ]
+    }
+  },
+  "verdicts": {
+    "C_vs_B": "H0-direction（无显著改进）",
+    "C_vs_A": "H0-direction（无显著改进）"
+  },
+  "disclaimer": "engineering chain validation only; NOT a preregistered hypothesis test"
+}
