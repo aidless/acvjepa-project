@@ -11,6 +11,15 @@
 1. **阶段一 · 研究与评估（2026-08-14）**：事实核验「LeCun 批评 LLM / JEPA 路线 / AMI Labs」叙事，产出审慎评估报告、11 页 PPT 与多份深度报告。核心结论：LeCun 的问题诊断（纯语言缩放不足以解决具身自主性）成立，但「LLM 是死胡同」的绝对化结论超出证据；更可能是 LLM × JEPA 混合智能体。评估报告由 Manus AI 生成（见 `LICENSE` 第三方说明）。
 2. **阶段二 · AC-VJEPA 工程实现（2026-08-15 起）**：可运行的 Python 参考实现 + 混沌工程/弹性恢复/监控/CI 体系：动作条件 V-JEPA 训练核心、DDP 多机训练、2:1 异构微批、UpdatePlan 拓扑感知、混合精度弹性恢复、数据游标账本、三层 KV checkpoint 缓存、防篡改 HITL 账本、Prometheus/Grafana 监控、Rendezvous—GitOps 并发仲裁、本地/K8s 混沌演练与 CI 门禁；以及官方 V-JEPA 2.1 权重适配、M2 数据装配（RoboCasa 适配器 / B 层视频切窗 / 端到端装配）、P1/P2 训练入口与 M3 评测预注册。
 
+## 文档分区（核心裁决科学 vs 继承工程基建）
+
+本仓库服务**双目标**，文档相应分两区，阅读时请注意区分：
+
+- **核心裁决科学**（服务「路线之争可证伪裁决」）：`PROJECT_PLAN.md`、`HYPOTHESES.md`、`BLUEPRINT.md`、`M3_MPC_EVALUATION_DESIGN.md`、`DATA_MANIFEST.md`、`实验记录与负结果报告_2026-08-17.md`、`M2_M3_REAL_RUNBOOK.md`、`现状评审_2026-08-17.md`、`H-M1_主动外联包_2026-08-17.md`、`最小真实数据集方案_2026-08-17.md`、`WAM生态学习报告_2026-08-15.md`、`C9_*.md`、`jepa_agent_project_findings.md`、`m3_mpc_eval.py` / `scripts/` 评测链、`experiments/`。
+- **继承工程基建**（阶段二工程实现，服务「可运行 AC-VJEPA 体系」）：DDP / 混沌工程 / 弹性恢复 / 监控 / HITL 账本 / K8s / GitOps 仲裁等约 70 篇运维手册与对应模块（`ac_vjepa_core.py`、`heterogeneous_microbatch_*`、`checkpoint_cache_*`、`monitoring/`、`k8s/` 等）。
+
+> 现状评审（2026-08-17）：工程基建完成度极高，但核心裁决目标仍卡在真实数据——详见 `现状评审_2026-08-17.md`。
+
 ## 快速上手
 
 ```powershell
@@ -74,10 +83,12 @@ python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
 | `BLUEPRINT.md` | **宏大蓝图**：十年推演总纲（纯思辨，无实验）——判定网络、A/B/C 分支树、X/Y/Z 终局、时间信号、决策门 |
 | `WAM生态学习报告_2026-08-15.md` | 外部生态学习（12 项仓库/论文）：VLA-JEPA/INTACT/LeWorldModel/vla-evaluation-harness/LeRobot/Seed Lottery 等 + 15 条精华模式与落地储备（A22–A25） |
 | `实验记录与负结果报告_2026-08-17.md` | 三预注册实验（H-T2/H-T4/H-D1 负结果）+ 工程链路验证 + M4 前置清单 + 复现要点 |
+| `现状评审_2026-08-17.md` | 现状评审报告（完成度盘点 + 问题风险 + P0/P1/P2 行动建议） |
+| `H-M1_主动外联包_2026-08-17.md` | H-M1 主动外联包（协作资产/目标对象/邀约文案/执行步骤） |
+| `最小真实数据集方案_2026-08-17.md` | 最小真实数据集获取方案（B 层候选数据集 + 许可核对 + 最小执行路径） |
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `M2_M3_REAL_RUNBOOK.md` | **M2/M3 真实执行交接包**：真实数据/RoboCasa 就绪后的机械执行（阶段 0–6 + G1 条件决策草稿 + 纪律） |
 | `C9_正式轮观察工作表_2026-11-15.md` | C9 正式轮机械执行模板（必收信号/H 假设更新规则/账本调权流程） |
-| `M2_M3_REAL_RUNBOOK.md` | **M2/M3 真实执行交接包**：真实数据/RoboCasa 就绪后的机械执行（阶段 0–6 + G1 条件决策草稿 + 纪律） |
 | `决策记录.md` / `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 决策与未决影响 / 状态快照 / 待办分级 / 验证结果 |
 
 ## 关键代码入口
