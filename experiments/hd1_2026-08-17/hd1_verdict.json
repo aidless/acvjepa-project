@@ -1,0 +1,14 @@
+{
+  "hypothesis": "H-D1",
+  "success_rates": {
+    "all_success": 0.05,
+    "fail30": 0.05,
+    "diff_pp": 0.0
+  },
+  "paired_wilcoxon_p_greater": 1.0,
+  "cohens_h_fail_vs_success": 0.0,
+  "cliff_delta_fail_vs_success": 0.0,
+  "support": false,
+  "criterion": "p<0.05 and h>0.3",
+  "disclaimer": "synthetic 2D env + synthetic failure-recovery semantics; chain-level evidence"
+}

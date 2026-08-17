@@ -1,0 +1,174 @@
+{
+  "demo": "m3_live_demo",
+  "checkpoint": "/root/autodl-tmp/hd1_success_out/last.pt",
+  "n_rollouts": 20,
+  "n_candidates": 32,
+  "success_rates": {
+    "A_random": 0.0,
+    "B_frozen_cosine": 0.2,
+    "C_light_jepa": 0.05
+  },
+  "per_rollout_success": {
+    "A_random": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "B_frozen_cosine": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "C_light_jepa": [
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "agg": {
+    "A_random": {
+      "n": 20,
+      "success_rate": 0.0,
+      "violation_rate": 0.0,
+      "replans_mean": 11.0,
+      "actions_mean": 12.0,
+      "ood_uncertainty": 1.0,
+      "ece": 0.05,
+      "failure_counts": {
+        "interface": 0,
+        "model": 0,
+        "execution": 20
+      },
+      "sim2real_gap": NaN
+    },
+    "B_frozen_cosine": {
+      "n": 20,
+      "success_rate": 0.2,
+      "violation_rate": 0.0,
+      "replans_mean": 10.55,
+      "actions_mean": 11.55,
+      "ood_uncertainty": 0.961326,
+      "ece": 0.087081,
+      "failure_counts": {
+        "interface": 0,
+        "model": 0,
+        "execution": 16
+      },
+      "sim2real_gap": NaN
+    },
+    "C_light_jepa": {
+      "n": 20,
+      "success_rate": 0.05,
+      "violation_rate": 0.0,
+      "replans_mean": 10.85,
+      "actions_mean": 11.85,
+      "ood_uncertainty": 0.988889,
+      "ece": 0.032572,
+      "failure_counts": {
+        "interface": 0,
+        "model": 0,
+        "execution": 19
+      },
+      "sim2real_gap": NaN
+    }
+  },
+  "ece_time_1_3": {
+    "A_random": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "B_frozen_cosine": [
+      0.15,
+      0.152017,
+      0.184873
+    ],
+    "C_light_jepa": [
+      0.0,
+      0.010189,
+      0.082581
+    ]
+  },
+  "stats_C_vs_B": {
+    "image_reach": {
+      "p": 0.17971249487899976,
+      "p_holm": 0.17971249487899976,
+      "significant": false,
+      "cohens_h": -0.47626840620534977,
+      "cliff_delta": -0.15,
+      "cliff_delta_ci": [
+        -0.4,
+        0.05
+      ]
+    }
+  },
+  "stats_C_vs_A": {
+    "image_reach": {
+      "p": 0.31731050786291415,
+      "p_holm": 0.31731050786291415,
+      "significant": false,
+      "cohens_h": 0.4510268117962624,
+      "cliff_delta": 0.05,
+      "cliff_delta_ci": [
+        0.0,
+        0.15
+      ]
+    }
+  },
+  "verdicts": {
+    "C_vs_B": "H0-direction（无显著改进）",
+    "C_vs_A": "H0-direction（无显著改进）"
+  },
+  "disclaimer": "engineering chain validation only; NOT a preregistered hypothesis test"
+}
