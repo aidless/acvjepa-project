@@ -76,6 +76,8 @@ python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
 | `实验记录与负结果报告_2026-08-17.md` | 三预注册实验（H-T2/H-T4/H-D1 负结果）+ 工程链路验证 + M4 前置清单 + 复现要点 |
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `M2_M3_REAL_RUNBOOK.md` | **M2/M3 真实执行交接包**：真实数据/RoboCasa 就绪后的机械执行（阶段 0–6 + G1 条件决策草稿 + 纪律） |
+| `C9_正式轮观察工作表_2026-11-15.md` | C9 正式轮机械执行模板（必收信号/H 假设更新规则/账本调权流程） |
+| `M2_M3_REAL_RUNBOOK.md` | **M2/M3 真实执行交接包**：真实数据/RoboCasa 就绪后的机械执行（阶段 0–6 + G1 条件决策草稿 + 纪律） |
 | `决策记录.md` / `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 决策与未决影响 / 状态快照 / 待办分级 / 验证结果 |
 
 ## 关键代码入口
