@@ -77,4 +77,8 @@
 | W2-VLA / `yyyyu120/W2-VLA` | A（研究原型，过新） | arXiv:2608.05369；21★；LICENSE NOASSERTION（待核对）；冻结 V-JEPA2.1 ViT-L/384 腕部编码器 + 任务条件未来腕部潜变量 + DiT 头；W2-CoT 离线进度标注。 | 仅作 H-R1（接口 tokens 注入）与金字塔第 4 层标注管线参考；成熟度低，不宜引用为可复现基线。 |
 | worldmodels_ros2 / `rsasaki0109/worldmodels_ros2` | B（集成层） | 9★；Apache-2.0；从 ROS 2 运行现有世界模型（运行时/适配器/基准/可视化）；图像目标检索动力学规划 + 自校准 surprise 监控。 | 吸收模式：无训练检索动力学基线（M3 A 组参考）、self-calibrated surprise 阈值（§4.2 自动化标注第一道闸）、Honest scope 声明文化。 |
 
-**待核验项（web 检索预算受限，2026-08-16 待补）**：VLA-JEPA 的 ECCV 2026 接收状态与仓库 LICENSE 文件（README 徽章 Apache-2.0）；W2-VLA LICENSE（NOASSERTION）；JEPA-WAM 10780 的「零样本部署」全文核对；vla-eval 榜单口径版本差异（README 2456 模型 vs 论文 657 结果）。
+**待核验项（经云端 GitHub/arXiv 实抓核验，2026-08-16）**：
+- ✅ **W2-VLA LICENSE=MIT**（StarVLA Team，GitHub 原始文件实核）——原「NOASSERTION（待核对）」解除；
+- ✅ **JEPA-WAM 10780v2 摘要实核：无「zero-shot」声称**——摘要只提「frozen V-JEPA2 encoder + Stage-JEPA 预测下一阶段的潜变量目标，RoboTwin 2.0 50 任务 90.25%、成功 rollout 步数 −5.97%」；
+- ⚠️ **VLA-JEPA 仓库根无 LICENSE 文件**（GitHub API license=null；README 上的 Apache-2.0 徽章与 ECCV 2026 接收状态只能一手确认）；
+- ⚠️ **vla-eval 榜单口径**：GitHub API 确认 README 含 leaderboard 部分；「README 2456 模型 vs 论文 657 结果」为学习批次当日摘录，榜单页复核待后续。

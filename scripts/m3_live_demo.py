@@ -170,12 +170,12 @@ def _rollout_scores(module, state0, goal, acts: np.ndarray) -> np.ndarray:
     state = state0.expand(n, -1).contiguous()  # [N,D]
     action_tokens = module.action_tokenizer(torch.from_numpy(acts).to(DEVICE))
     hidden0 = state.unsqueeze(0)
-    hidden, _ = module.rollout(action_tokens, hidden0)  # [1,N,D]
-    future = state[:, None, :] + module.latent_delta(hidden[0])  # [N,T,D]
-    logvar = module.log_variance_head(hidden[0]).clamp(-8.0, 6.0)
+    out, _ = module.rollout(action_tokens, hidden0)  # out: [N,T,D]
+    future = state[:, None, :] + module.latent_delta(out)  # [N,T,D]
+    logvar = module.log_variance_head(out).clamp(-8.0, 6.0)  # [N,T,D]
     goal_b = goal.unsqueeze(0).expand(n, -1)
     d2 = (future[:, -1] - goal_b).square().sum(-1)  # [N]
-    var = logvar[:, -1].exp()
+    var = logvar[:, -1].exp()  # [N]
     return (-d2 / var).cpu().numpy()
 
 
