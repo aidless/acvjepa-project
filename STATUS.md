@@ -82,6 +82,7 @@
 - **C9 第三轮核验（提前轮）**：WAM 术语收敛（多篇综述）、统一 VLA 评测框架公共品化（allenai/vla-evaluation-harness）、JEPA-WAM v2、AMI 首次公开研究信号（待核验）、阿里 WorldRoamBench；H-P1 开源侧强化、概率账本 Y+X 方向支持。
 - **WAM 生态学习（2026-08-15）**：12 项外部研究学习报告（`WAM生态学习报告_2026-08-15.md`）+ 15 条精华模式；M3 §7.2 生态参照储备（不改口径）；HYPOTHESES 术语对齐（latent-only WAM）；BACKLOG A22–A25；ESSENCE_LEDGER E108–E120。
 - **H-T2/H-T4 消融云端执行（2026-08-16 启动）**：约束解除；AutoDL 3090 48GB 已跑通短训验证（800 窗口×4 epoch 全 PASS）；`--ema-target` 开关 + `scripts/run_ht2_ht4_ablation.sh` 落盘；消融运行中（H-T2 12 runs + H-T4 6 runs，合成数据链路级）。
+- **H-T2/H-T4 消融结果（2026-08-16，双 refuted）**：H-T2 饱和判据不成立（比率 4.80）且**方向反转**（窄头更优，w32=-3.505）；H-T4 EMA 收益巨大（|Δ|=1715%，同步目标显著劣化）；证据 `experiments/ht2_ht4_2026-08-16/`；G2 输入=保留 EMA、latent_dim 64 候选；真实数据复验待办。
 - 治理闭环：决策记录追加蓝图落盘与 v2 修订条目；`origin/master` 同步至 `ca96612`。
 
 ## 后续审计（2026-08-15 完成）
