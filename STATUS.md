@@ -84,6 +84,7 @@
 - **H-T2/H-T4 消融云端执行（2026-08-16 启动）**：约束解除；AutoDL 3090 48GB 已跑通短训验证（800 窗口×4 epoch 全 PASS）；`--ema-target` 开关 + `scripts/run_ht2_ht4_ablation.sh` 落盘；消融运行中（H-T2 12 runs + H-T4 6 runs，合成数据链路级）。
 - **H-T2/H-T4 消融结果（2026-08-16，双 refuted）**：H-T2 饱和判据不成立（比率 4.80）且**方向反转**（窄头更优，w32=-3.505）；H-T4 EMA 收益巨大（|Δ|=1715%，同步目标显著劣化）；证据 `experiments/ht2_ht4_2026-08-16/`；G2 输入=保留 EMA、latent_dim 64 候选；真实数据复验待办。
 - **后续全做轮（2026-08-16）**：A22 done（vla-eval 对接结论）；A23 done（M3 v1.2 四项协议扩展）；A24 补录完成（4 项待核验预算受限待补）；G2 定案（latent_dim 保持 128、64 候选登记）；概率账本提前首调（记录不调权）；A26 立项（真实 B 层数据复验，blocked）。
+- **M3 骨架落地（2026-08-16）**：`m3_mpc_eval.py` v1.2 实现落盘——三基线排序器接口 + Mock 环境 + MPC + 六指标 + ECE 时间轴分解 + Wilcoxon/Holm + Cohen's h/Cliff's delta + 结果表（复现判定列）；本地冒烟全绿（A 0.000 < B 0.033 < C 1.000，C vs B p=0.000）；RoboCasa 部署评估=暂不部署（C 组模型未就绪），列 BACKLOG A27（blocked）。
 - 治理闭环：决策记录追加蓝图落盘与 v2 修订条目；`origin/master` 同步至 `ca96612`。
 
 ## 后续审计（2026-08-15 完成）

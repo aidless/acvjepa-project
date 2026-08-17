@@ -33,6 +33,7 @@
 | A24 | 生态清单补录与核对：`jepa_agent_project_findings.md` 补 INTACT/LeWorldModel/W2-VLA/worldmodels_ros2 + JEPA-WAM 10780 区分；核对清单闭环（VLA-JEPA ECCV/LICENSE、W2-VLA LICENSE、JEPA-WAM 零样本声称、vla-eval 榜单口径） | WAM 生态学习批次 | open | **补录完成（2026-08-16）**；4 项待核验因 web 检索预算耗尽（Insufficient Balance）标记待补，预算恢复后闭环 |
 | A25 | C9 核验新增「多种子稳定性」项（Seed Lottery 1/13 vs 0/21；上游 checkpoint ≥5 种子复现） | WAM 生态学习批次（2606.13856） | done | 检查清单已固化（2026-11-15 正式轮生效） |
 | A26 | H-T2/H-T4 真实 B 层数据复验（同口径 `run_ht2_ht4_ablation.sh` + `analyze_ht2_ht4.py`；结果决定 G2 定案） | 决策记录 2026-08-16（消融结果局限） | blocked | 前置=真实 B 层数据采集/许可（外部依赖，暂无） |
+| A27 | RoboCasa 云端部署（M3 评测环境前置）：Isaac Gym/依赖 + 21.4GB 镜像 + vla-eval 底座；评估结论=现装无评测对象（C 组模型未就绪） | 决策记录 2026-08-16（A22 对接 + 部署评估） | blocked | 与 M2 真实训练启动绑定：B/C 层数据就绪 → 训练 C 组 → 部署 RoboCasa → 接 `m3_mpc_eval.py` 真实排序器 |
 
 ## B. 需真实集群 / 硬件（本机 BLOCKED）
 
