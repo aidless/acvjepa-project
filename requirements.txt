@@ -8,7 +8,7 @@ numpy==2.5.1
 
 # --- config / crypto / observability ---
 PyYAML==6.0.3
-cryptography==50.0.0          # Ed25519 HITL ledger
+cryptography==50.0.2          # Ed25519 HITL ledger
 prometheus-client==0.26.0     # distributed_training_observability.py
 
 # --- optional runtime backends ---
