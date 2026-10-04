@@ -12,7 +12,7 @@ cryptography==50.0.0          # Ed25519 HITL ledger
 prometheus-client==0.26.0     # distributed_training_observability.py
 
 # --- optional runtime backends ---
-onnxruntime==1.28.0           # edge_ac_vjepa_ort.py / export_ac_vjepa_onnx.py
+onnxruntime==1.30.0           # edge_ac_vjepa_ort.py / export_ac_vjepa_onnx.py
 
 # --- tooling (not required by project code) ---
 # pytest==8.3.4               # broken on this host: global deepeval plugin conflict; use `python -m unittest`
