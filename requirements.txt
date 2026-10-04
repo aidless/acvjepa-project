@@ -4,7 +4,7 @@
 
 # --- core deep learning ---
 torch==2.5.1+cu121            # or a CPU-only build; Windows wheels lack libuv -> torchrun needs USE_LIBUV=0
-numpy==2.5.1
+numpy==2.5.3
 
 # --- config / crypto / observability ---
 PyYAML==6.0.3
