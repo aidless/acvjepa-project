@@ -38,7 +38,7 @@ jobs:
         run: ARTIFACT_DIR=artifacts scripts/run_offline_chaos_contract.sh
       - name: Upload sanitized offline diagnostics
         if: always()
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v4.6.2
         with:
           name: kubernetes-chaos-offline-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/
@@ -69,7 +69,7 @@ jobs:
           CHAOS_CONTRACT_IMAGE: ${{ inputs.chaos_contract_image }}
         run: python render_kubernetes_chaos_contract.py --image "$CHAOS_CONTRACT_IMAGE" --output rendered/offline-chaos-contract.yaml
       - name: Upload reviewed GitOps input
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v4.6.2
         with:
           name: reviewed-chaos-lab-manifest-${{ github.run_id }}
           path: rendered/offline-chaos-contract.yaml
