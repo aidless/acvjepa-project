@@ -44,7 +44,7 @@ jobs:
       - name: Install deterministic test dependencies
         run: python -m pip install --break-system-packages 'prometheus-client==0.20.0' 'PyYAML==6.0.2'
       - name: Run shared offline contract and Kubernetes template validation
-        run: ARTIFACT_DIR=artifacts scripts/run_offline_chaos_contract.sh
+        run: ARTIFACT_DIR=artifacts bash scripts/run_offline_chaos_contract.sh
       - name: Upload sanitized offline diagnostics
         if: always()
         uses: actions/upload-artifact@v5 # v4.6.2 hash retired by GitHub (auto-fail)

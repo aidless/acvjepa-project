@@ -70,7 +70,7 @@ jobs:
             test_heterogeneous_microbatch_failpoints.py
 
       - name: Run shared offline chaos contract
-        run: ARTIFACT_DIR=artifacts scripts/run_offline_chaos_contract.sh
+        run: ARTIFACT_DIR=artifacts bash scripts/run_offline_chaos_contract.sh
 
       - name: Upload sanitized offline diagnostics
         if: always()
