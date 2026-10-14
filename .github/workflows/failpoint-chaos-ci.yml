@@ -7,7 +7,7 @@ on:
       - 'monitoring/**'
       - '.github/workflows/failpoint-chaos-ci.yml'
   push:
-    branches: [main]
+    branches: [main, master]  # default branch is master; [main] alone never fired
     paths:
       - '**.py'
       - 'monitoring/**'

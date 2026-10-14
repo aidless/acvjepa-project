@@ -9,6 +9,15 @@ on:
       - 'checkpoint_integrity_corruption_demo.py'
       - 'render_kubernetes_chaos_contract.py'
       - '.github/workflows/kubernetes-chaos-contract.yml'
+  push:
+    branches: [main, master]  # was PR/dispatch-only: the offline contract never ran on master pushes
+    paths:
+      - 'k8s/chaos-lab/**'
+      - 'scripts/run_offline_chaos_contract.sh'
+      - 'threadsafe_checkpoint_load_gate.py'
+      - 'checkpoint_integrity_corruption_demo.py'
+      - 'render_kubernetes_chaos_contract.py'
+      - '.github/workflows/kubernetes-chaos-contract.yml'
   workflow_dispatch:
     inputs:
       chaos_contract_image:
