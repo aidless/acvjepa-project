@@ -9,5 +9,21 @@ verify_artifacts/
 artifacts-compose/
 
 weights/
-# Per-seed run transcripts are superseded by summary.tsv in the same directory
-experiments/**/*.log
+
+
+# --- added by WorkBuddy takeover 2026-10-21 ---
+.env
+.env.*
+!.env.example
+!.env.template
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+data/
+models/
+.regression_tmp/
+*.bak
+
+*.bak*
