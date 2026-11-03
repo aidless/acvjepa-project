@@ -1,5 +1,5 @@
 # AC-VJEPA: From "Is LLM a dead end?" to a runnable action-conditioned world-model stack
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![Data](https://img.shields.io/badge/data-CC--BY--4.0-lightgrey.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![Data](https://img.shields.io/badge/data-CC--BY--4.0-lightgrey.svg)](LICENSE-DATA)
 
 围绕 Yann LeCun 对「大语言模型是死胡同」这一批评展开的**研究 + 工程**双阶段项目：先把路线之争转化为可证伪命题，再把它落成一套可运行的 **动作条件 V-JEPA（AC-VJEPA）** 工程体系——训练、分布式、混沌工程、监控、数据装配与评测预注册俱全。
 
