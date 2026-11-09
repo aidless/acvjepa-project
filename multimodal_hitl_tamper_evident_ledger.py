@@ -578,7 +578,7 @@ class MultimodalAuditLedger:
             if parsed.scheme != "file":
                 continue
             path_text = unquote(parsed.path)
-            # Windows: file:///F:/... -> /F:/... ; strip the leading slash so
+            # Windows: file:///<drive>:/... -> /<drive>:/... ; strip the leading slash so
             # Path does not interpret it as rooted on the current drive.
             if os.name == "nt" and len(path_text) >= 3 and path_text[0] == "/" and path_text[2] == ":":
                 path_text = path_text[1:]

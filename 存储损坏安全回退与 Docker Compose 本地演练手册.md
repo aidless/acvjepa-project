@@ -141,8 +141,8 @@ Compose 的 long-form `depends_on` 可等待依赖的 healthcheck 成功后再�
 ### 4.3 一键运行
 
 ```bash
-cd /home/ubuntu/lecun_analysis
-./docker/run_local_chaos_demo.sh
+# From the repository root. The script lives at the repo root, not under docker/.
+./run_local_chaos_demo.sh
 ```
 
 脚本依次 build `metrics-demo` 与 `chaos-ci` 镜像，启动 metrics/Prometheus/Grafana，等待 metrics healthcheck，然后显式运行 `chaos-ci`。成功后可访问：

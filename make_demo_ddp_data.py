@@ -1,7 +1,7 @@
 """Create a tiny local AC-V-JEPA window dataset for train_ac_vjepa_ddp.py smoke testing.
 
 Supports --img-size for V-JEPA backbone runs (384px) and --root for a custom
-output directory (default keeps the historical /home/ubuntu path).
+output directory. The default is the relative path demo_ddp_data.
 """
 from __future__ import annotations
 

@@ -1,15 +1,20 @@
-# AC-VJEPA: From "Is LLM a dead end?" to a runnable action-conditioned world-model stack
+# AC-VJEPA
 
-[![CI](https://github.com/aidless/acvjepa-project/actions/workflows/failpoint-chaos-ci.yml/badge.svg)](https://github.com/aidless/acvjepa-project/actions/workflows/failpoint-chaos-ci.yml)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![Data](https://img.shields.io/badge/data-CC--BY--4.0-lightgrey.svg)](LICENSE-DATA)
+<!-- problem-start -->
+Can a light action-conditioned V-JEPA beat a frozen-vision reactive baseline on a restricted manipulation distribution (H1), or not (H0)?
+The three preregistered ablations in this clone missed their support criteria on synthetic protocols; they do not answer H1/H0, and real-data M3 has not been run.
+The clone contains the training, chaos, monitoring, and data-assembly code plus the preregistration; weights, robot datasets, and the route verdict are not in it.
+<!-- problem-end -->
 
-> **English TL;DR**: A two-phase project responding to LeCun's 'LLM is a dead end' critique: it first converts the route dispute into falsifiable claims, then builds a runnable action-conditioned V-JEPA reference implementation with DDP training, chaos drills, monitoring, data assembly, and a preregistered M3 evaluation. Verify offline with `./verify_all.ps1` (59/59 checks); official weights are downloaded separately under Meta's terms. It is an offline research artifact — no robot control or live network effects.
+**Science status:** WORK-IN-PROGRESS. H1/H0 is open. What H-T2, H-T4, and H-D1 do and do not prove is in `FAILURE_MODES.md`. This is not an A: there is no in-repo real manipulation set, no M3 on that set, no M4 verdict, and the negative results have not been repeated on real data.
 
-围绕 Yann LeCun 对「大语言模型是死胡同」这一批评展开的**研究 + 工程**双阶段项目：先把路线之争转化为可证伪命题，再把它落成一套可运行的 **动作条件 V-JEPA（AC-VJEPA）** 工程体系——训练、分布式、混沌工程、监控、数据装配与评测预注册俱全。
+**Infrastructure status:** the reference stack is committed. A fresh clone is checked with `bash scripts/verify_committed.sh` (claim-drift guard, then the offline chaos contract). Inventory, which that guard recomputes from the tree: committed contract commands: 13; unittest methods in tree: 21; unittest methods run by that contract: 10; verify_all.ps1 named checks: 59. The 59 figure counts every name in `verify_all.ps1`, including groups that skip without weights, CUDA, or Docker. A 2026-08-15 Windows host log reported those names as passes; this commit does not re-run that log and does not treat it as the clone contract. The checked inventory is `verification_manifest.json`.
 
-- **许可证**：MIT（见 `LICENSE`）。官方 V-JEPA 2 权重不随仓库分发，需自行从 Hugging Face 下载并遵守 Meta 条款（见下文「权重」）。
-- **验证基线**：59/59 全绿，`.\verify_all.ps1` 一键可重跑（见 `VERIFY_RESULTS.md`）。
-- **语言**：工程手册与研究报告以中文为主，代码/docstring 英文。
+STATUS: WORK-IN-PROGRESS.
+
+Code is MIT (`LICENSE`). Records under `experiments/` are CC-BY-4.0 (`LICENSE-DATA`). This file does not carry a CI, license, or acceptance badge. `.github/workflows/failpoint-chaos-ci.yml` runs the offline contract when Python, monitoring, or that workflow changes. `.github/workflows/claim-drift.yml` runs the drift guard on every push and pull request. A workflow run is not a science result. Official V-JEPA 2 weights are not in the clone; download them separately and follow Meta's terms.
+
+中文：要回答的是 H1/H0，不是工程是否写完。科学状态仍是 WORK-IN-PROGRESS。离线能复核的只有仓库里已经提交的契约。手册以中文为主，代码与 docstring 为英文。
 
 ## 项目是什么
 
@@ -27,27 +32,14 @@
 
 ## 快速上手
 
-```powershell
-# 0) 依赖
-python -m pip install -r requirements.txt
-
-# 1) 全部离线验证（幂等；结果写入 verify_artifacts/ 与 VERIFY_RESULTS.md）
-.\verify_all.ps1
-
-# 2) 单个模块冒烟
-python ac_vjepa_core.py                                   # 训练步 + EMA + 安全回退状态机
-python heterogeneous_microbatch_chaos_framework.py        # 5 类 2:1 故障注入
-python checkpoint_cache_load_shedding_simulator.py        # 高并发缓存防雪崩
-python validate_monitoring_config.py                      # 18 alerts / 10 rules / 19 panels
-
-# 3) 单元测试（避开损坏的 deepeval 插件，见 VERIFY_RESULTS 备注）
-python -m unittest -v test_heterogeneous_microbatch_failpoints.py
-
-# 4) Gloo CPU 双进程语义回归（Windows 需 USE_LIBUV=0；内存不足时 WinError 1455）
-$env:USE_LIBUV='0'; $env:CUDA_VISIBLE_DEVICES='-1'
-python make_demo_ddp_data.py --root verify_artifacts/demo_ddp_data
-python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
+```sh
+# Fresh-clone contract. Needs PyYAML and prometheus-client
+# (CI pins PyYAML==6.0.2 and prometheus-client==0.20.0).
+# requirements.txt is the wider declared set, not a prerequisite of this command.
+bash scripts/verify_committed.sh
 ```
+
+`verify_all.ps1` is the historical Windows host runner. Weight, CUDA, and Docker groups SKIP when those inputs are absent. A SKIP is not a pass. Torch smokes (`ac_vjepa_core.py` and the Gloo runner) are in that host script and are not part of `verify_committed.sh`.
 
 ## 权重（A 层，官方 V-JEPA 2.1 ViT-B 80M）
 
@@ -94,6 +86,8 @@ python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
 | `CLUSTER_VALIDATION_RUNBOOK.md` | B1–B9 集群验证执行清单（前置/命令/验收） |
 | `M2_M3_REAL_RUNBOOK.md` | **M2/M3 真实执行交接包**：真实数据/RoboCasa 就绪后的机械执行（阶段 0–6 + G1 条件决策草稿 + 纪律） |
 | `C9_正式轮观察工作表_2026-11-15.md` | C9 正式轮机械执行模板（必收信号/H 假设更新规则/账本调权流程） |
+| `FAILURE_MODES.md` | 负结果证明什么、不证明什么；为何状态仍是 WORK-IN-PROGRESS |
+| `verification_manifest.json` | 从脚本数出来的检查清单（drift guard 会比对） |
 | `决策记录.md` / `STATUS.md` / `BACKLOG.md` / `VERIFY_RESULTS.md` | 决策与未决影响 / 状态快照 / 待办分级 / 验证结果 |
 
 ## 关键代码入口

@@ -141,7 +141,7 @@ PREPARED(o=0, end=3) → node loss / NCCL error
 运行：
 
 ```bash
-cd /home/ubuntu/lecun_analysis
+# From the repository root.
 python3 elastic_data_cursor_ledger.py
 ```
 
@@ -204,7 +204,7 @@ ARM
 模块的 `RecordingExecutor` 仅记录 `mock_inject` 与 `mock_rollback` 事件。它用于验证守卫流程，不触发任何网络 I/O：
 
 ```bash
-cd /home/ubuntu/lecun_analysis
+# From the repository root.
 python3 rdma_rail_chaos_guard.py
 ```
 

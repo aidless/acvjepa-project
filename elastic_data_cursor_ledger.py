@@ -516,7 +516,7 @@ def _local_path_from_uri(uri: str) -> Path | None:
     if uri.startswith("file://"):
         parsed = urlparse(uri)
         path = unquote(parsed.path)
-        # Windows: file:///F:/... -> /F:/... ; strip the leading slash so Path
+        # Windows: file:///<drive>:/... -> /<drive>:/... ; strip the leading slash so Path
         # does not interpret it as a rooted path on the current drive.
         if os.name == "nt" and len(path) >= 3 and path[0] == "/" and path[2] == ":":
             path = path[1:]

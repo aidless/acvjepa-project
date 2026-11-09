@@ -9,7 +9,7 @@
 |---|---|---|---|---|
 | A1 | 补装缺失依赖并固化环境（requirements.txt / pip freeze） | 接管勘察 | done | prometheus-client 已补装；`requirements.txt` 已入库（A6） |
 | A2 | 修复 zip 中 `:`/`/` 非法文件名并物化工作副本 | 接管决策 | done | `2_1`/`CI-CD`/`RDMA_rail` |
-| A3 | 建立可重跑验证基线（verify_all.ps1 → VERIFY_RESULTS.md） | 接管决策 | done | **42/42 全绿**（2026-08-15 最终） |
+| A3 | 建立可重跑验证基线（verify_all.ps1 → VERIFY_RESULTS.md） | 接管决策 | done | 2026-08-15 主机日志，不是当前契约。当前 fresh clone 见 `verification_manifest.json` 与 `scripts/verify_committed.sh` |
 | A4 | Docker Compose 本地演练实跑（build→up→chaos-ci profile→down 全流程） | 存储损坏回退手册；决策「本地 Compose」条 | done | 3 容器 Healthy；chaos-ci 容器内跑离线契约成功；修复 .github 缺失 SKIP 语义 |
 | A5 | PPTX 与 `slide_content.md` 一致性核对（页数/要点/来源） | 阶段一交付审计 | done | 12 页↔12 区块对齐，关键事实全过（`verify_artifacts/ppt_audit_report.json`） |
 | A6 | 统一 `requirements.txt` + 运行说明入库 | A1 | done | 已入库 |

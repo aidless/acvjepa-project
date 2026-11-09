@@ -1,6 +1,7 @@
 {
   "demo": "m3_live_demo",
-  "checkpoint": "/root/autodl-tmp/hd1_fail30_out/last.pt",
+  "checkpoint": null,
+  "checkpoint_in_repo": false,
   "n_rollouts": 20,
   "n_candidates": 32,
   "success_rates": {

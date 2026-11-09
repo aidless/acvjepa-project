@@ -1,6 +1,36 @@
-# STATUS — 项目当前状态快照
+# STATUS
 
-> 快照时间：2026-08-15（接管日 + M1）。验证结果明细以 `VERIFY_RESULTS.md` 为准；里程碑见 `PROJECT_PLAN.md`。
+**STATUS: WORK-IN-PROGRESS.** Not grade A. The route question is open.
+
+## Current claim (2026-11-09)
+
+Science:
+
+- H1/H0 has not been run. There is no M4 verdict.
+- H-T2, H-T4, and H-D1 missed their preregistered support criteria on synthetic protocols. The scope of that statement is `FAILURE_MODES.md`. It is not a real-data refutation.
+- The pusht loss figures in the log below are a host narrative. The dataset, windows, and checkpoint are not in this clone and were not re-checked here.
+- JSON under `experiments/` is committed. The checkpoints those runs used are not. Host paths were removed from the JSON; the recorded rates were not edited.
+
+Infrastructure:
+
+- Code, preregistration, and the offline contract are in the tree.
+- Fresh clone: `bash scripts/verify_committed.sh`.
+- `verify_all.ps1` still names the historical maximum. See `verification_manifest.json`. Optional groups SKIP without weights, CUDA, or Docker. A 2026-08-15 host log reported those names as passes. That log is not the committed-tree result.
+
+Explicit gaps:
+
+1. No in-repo real manipulation dataset sufficient for H1/H0.
+2. Official V-JEPA weights are gitignored. Training smokes that need them are optional.
+3. No cluster, NCCL, RDMA, or Kubernetes-apply evidence.
+4. M3 on real data and the M4 verdict are not done.
+5. H-T2, H-T4, and H-D1 have not been repeated on real data.
+
+<!-- historical-log -->
+
+# Historical snapshot (through 2026-08-17)
+
+The sections below are the log as written on those dates, including host pass wording. They are not the current claim.
+
 
 ## P1 域适配训练脚本（2026-08-15）— ✅ 完成（J 组 4 项 PASS）
 

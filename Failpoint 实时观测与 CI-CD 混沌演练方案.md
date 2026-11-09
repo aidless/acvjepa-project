@@ -163,7 +163,7 @@ histogram_quantile(
 命令：
 
 ```bash
-cd /home/ubuntu/lecun_analysis
+# From the repository root.
 python3 run_failpoint_observability_drill.py \
   --report artifacts/failpoint_drill_report.json \
   --metrics artifacts/failpoint_metrics.prom

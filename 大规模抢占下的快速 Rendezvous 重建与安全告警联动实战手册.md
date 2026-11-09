@@ -157,7 +157,7 @@ Prometheus rule
 ## 5. 演练脚本与运行结果
 
 ```bash
-cd /home/ubuntu/lecun_analysis
+# From the repository root.
 python3 rapid_recovery_alert_drill.py
 ```
 
