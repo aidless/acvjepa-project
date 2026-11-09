@@ -3,6 +3,8 @@
 [![CI](https://github.com/aidless/acvjepa-project/actions/workflows/failpoint-chaos-ci.yml/badge.svg)](https://github.com/aidless/acvjepa-project/actions/workflows/failpoint-chaos-ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![Data](https://img.shields.io/badge/data-CC--BY--4.0-lightgrey.svg)](LICENSE-DATA)
 
+> **English TL;DR**: A two-phase project responding to LeCun's 'LLM is a dead end' critique: it first converts the route dispute into falsifiable claims, then builds a runnable action-conditioned V-JEPA reference implementation with DDP training, chaos drills, monitoring, data assembly, and a preregistered M3 evaluation. Verify offline with `./verify_all.ps1` (59/59 checks); official weights are downloaded separately under Meta's terms. It is an offline research artifact — no robot control or live network effects.
+
 围绕 Yann LeCun 对「大语言模型是死胡同」这一批评展开的**研究 + 工程**双阶段项目：先把路线之争转化为可证伪命题，再把它落成一套可运行的 **动作条件 V-JEPA（AC-VJEPA）** 工程体系——训练、分布式、混沌工程、监控、数据装配与评测预注册俱全。
 
 - **许可证**：MIT（见 `LICENSE`）。官方 V-JEPA 2 权重不随仓库分发，需自行从 Hugging Face 下载并遵守 Meta 条款（见下文「权重」）。
