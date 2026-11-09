@@ -35,14 +35,22 @@ def main() -> int:
 
     diff = np.asarray(f_vec, float) - np.asarray(s_vec, float)
     if np.all(diff == 0):
+        # Tie. experiments/hd1_2026-08-17/hd1_verdict.json records p=1.0 from this
+        # branch. This commit does not recompute that file.
         p = 1.0
     else:
         try:
-            stat, p = stats.wilcoxon(s_vec, f_vec, zero_method="wilcox", alternative="greater")
+            # Preregistered tail: fail injection is better than all-success (f > s).
+            # wilcoxon(x, y, alternative="greater") tests x - y > 0.
+            # The previous call passed (success, fail), which tested the opposite tail.
+            stat, p = stats.wilcoxon(f_vec, s_vec, zero_method="wilcox", alternative="greater")
         except ValueError:
             p = 1.0
     sr_s, sr_f = float(np.mean(s_vec)), float(np.mean(f_vec))
-    h = cohens_h(sr_s, sr_f)  # fail vs success（失败更高→h>0）
+    # Positive when the fail-injection rate is higher. The previous call was
+    # cohens_h(success, fail), which flipped the sign. The stored verdict has
+    # h=0 because the two C_light_jepa rates are equal, so that file is unchanged.
+    h = cohens_h(sr_f, sr_s)
     # Cliff's delta：失败值 > 成功值 的比例优势
     gt = sum(1 for a in f_vec for b in s_vec if a > b)
     lt = sum(1 for a in f_vec for b in s_vec if a < b)

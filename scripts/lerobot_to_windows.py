@@ -18,8 +18,8 @@ future_events）。首个目标：`lerobot/pusht`（96×96、state/action 2 维�
 
 用法：
   python scripts/lerobot_to_windows.py \
-    --data-root /root/autodl-tmp/realdata/pusht \
-    --out /root/autodl-tmp/pusht_windows \
+    --data-root path/to/lerobot-pusht \
+    --out path/to/pusht-windows \
     --max-episodes 30 --img-size 384 --stride 4
 """
 from __future__ import annotations

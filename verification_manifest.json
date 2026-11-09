@@ -1,0 +1,387 @@
+{
+  "committed_contract_python_commands": 13,
+  "committed_contract_script": "scripts/run_offline_chaos_contract.sh",
+  "fresh_clone_entry": "scripts/verify_committed.sh",
+  "historical_host_log": {
+    "claimed_passes": 59,
+    "date": "2026-08-15",
+    "note": "One Windows laptop with weights, CUDA, and Docker present. Not the fresh-clone contract. Optional groups SKIP when those inputs are absent. This commit does not re-run that log.",
+    "rerun_for_this_claim": false
+  },
+  "unittest_methods_in_committed_contract": 10,
+  "unittest_methods_in_tree": 21,
+  "unittest_methods_not_in_committed_contract": {
+    "ac_vjepa_fault_injection_tests.py": 6,
+    "test_resumable_ledger_and_training_input.py": 2,
+    "test_shadow_rca_and_pointcloud_pipeline.py": 3
+  },
+  "unittest_methods_run_by_contract": {
+    "test_heterogeneous_microbatch_failpoints.py": 6,
+    "test_shadow_canary_gate.py": 4
+  },
+  "verify_all_by_tier": {
+    "committed_contract_wrapper": 1,
+    "declared_requirements": 42,
+    "optional_cuda_and_weights": 7,
+    "optional_docker": 2,
+    "optional_weights": 7
+  },
+  "verify_all_checks": [
+    {
+      "kind": "Run-Check",
+      "name": "unit.test_heterogeneous_microbatch_failpoints",
+      "section": "A",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "unit.test_shadow_canary_gate",
+      "section": "A",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "unit.test_shadow_rca_and_pointcloud_pipeline",
+      "section": "A",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "unit.test_resumable_ledger_and_training_input",
+      "section": "A",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "unit.ac_vjepa_fault_injection_tests",
+      "section": "A",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.ac_vjepa_core",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.elastic_data_cursor_ledger",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.verified_checkpoint_cache",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.threadsafe_checkpoint_load_gate",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.multimodal_hitl_tamper_evident_ledger",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.rapid_recovery_alert_drill",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.mixed_precision_elastic_recovery",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.rdma_rail_chaos_guard",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.recovery_deployment_arbiter",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.heterogeneous_microbatch_chaos_framework",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.checkpoint_cache_load_shedding_simulator",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.checkpoint_integrity_corruption_demo",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.distributed_training_observability",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.run_failpoint_observability_drill",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.dr_policy_tuner",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.spsc_robot_pipeline",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.shadow_canary_gate",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.shadow_degradation_rca",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.hitl_quarantine_review",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.sim2real_hard_example_compiler",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.sim2real_pointcloud_video_pipeline",
+      "section": "B",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "smoke.dynamic_nccl_update_plan_train",
+      "section": "C",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "validate.monitoring_config",
+      "section": "D",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "validate.local_compose",
+      "section": "D",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "validate.kubernetes_chaos_lab",
+      "section": "D",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "validate.kubernetes_chaos_ci",
+      "section": "D",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "validate.failpoint_ci_config",
+      "section": "D",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "validate.update_production_dashboard",
+      "section": "D",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "ddp.make_demo_data",
+      "section": "E",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "ddp.train_ac_vjepa_gloo_2proc",
+      "section": "E",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "ddp.topology_aware_update_plan_2proc",
+      "section": "E",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "ddp.test_dynamic_nccl_full_state_equivalence",
+      "section": "E",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "ddp.test_dynamic_nccl_acvjepa_integration",
+      "section": "E",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "docker.compose_config",
+      "section": "F",
+      "tier": "optional_docker"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "docker.local_chaos_demo",
+      "section": "F",
+      "tier": "optional_docker"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "contract.offline_chaos_contract_sh",
+      "section": "G",
+      "tier": "committed_contract_wrapper"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "hf.make_demo_data_384",
+      "section": "H",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "hf.train_vjepa2hf_frozen_1proc",
+      "section": "H",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "inline_pass",
+      "name": "hf.checkpoint_saved",
+      "section": "H",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "m2.robocasa_adapter_contract",
+      "section": "I",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "m2.make_b_layer_clips",
+      "section": "I",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "m2.video_to_windows",
+      "section": "I",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "m2.assemble_dataset",
+      "section": "I",
+      "tier": "declared_requirements"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p1.make_clips",
+      "section": "J",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p1.video_to_windows_384",
+      "section": "J",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p1.train_domain_adapt_1proc",
+      "section": "J",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "inline_pass",
+      "name": "p1.checkpoint_saved",
+      "section": "J",
+      "tier": "optional_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p1cuda.make_clips",
+      "section": "K",
+      "tier": "optional_cuda_and_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p1cuda.video_to_windows_384",
+      "section": "K",
+      "tier": "optional_cuda_and_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p1cuda.train_frozen_gpu",
+      "section": "K",
+      "tier": "optional_cuda_and_weights"
+    },
+    {
+      "kind": "inline_pass",
+      "name": "p1cuda.checkpoint_saved",
+      "section": "K",
+      "tier": "optional_cuda_and_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p2cuda.make_demo_data",
+      "section": "L",
+      "tier": "optional_cuda_and_weights"
+    },
+    {
+      "kind": "Run-Check",
+      "name": "p2cuda.train_action_cond_gpu",
+      "section": "L",
+      "tier": "optional_cuda_and_weights"
+    },
+    {
+      "kind": "inline_pass",
+      "name": "p2cuda.checkpoint_saved",
+      "section": "L",
+      "tier": "optional_cuda_and_weights"
+    }
+  ],
+  "verify_all_named_checks": 59,
+  "verify_all_script": "verify_all.ps1"
+}

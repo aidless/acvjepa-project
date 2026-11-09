@@ -4,13 +4,13 @@
 
 ## 环境与验证
 
-```powershell
-# 依赖
-python -m pip install -r requirements.txt
-
-# 全量验证基线（幂等；详情见 VERIFY_RESULTS.md）
-.\verify_all.ps1
+```sh
+# Fresh-clone contract (no weights, no GPU, no Docker).
+# Needs PyYAML and prometheus-client; see .github/workflows/failpoint-chaos-ci.yml for the pins.
+bash scripts/verify_committed.sh
 ```
+
+`verify_all.ps1` is the historical Windows host runner. Groups that need weights, CUDA, or Docker SKIP when those inputs are absent. A SKIP is not a pass.
 
 注意事项：
 - 本机验证基线使用 `python -m unittest`（全局 pytest 的 deepeval 插件在本机损坏，见 VERIFY_RESULTS.md 备注）；
@@ -20,7 +20,7 @@ python -m pip install -r requirements.txt
 ## 提交规范
 
 - 每个 commit 只做一件事；PR 描述关联 PROJECT_PLAN 里程碑或 BACKLOG 条目；
-- 改动代码必须通过 `verify_all.ps1` 全绿（或说明 SKIP 原因）；
+- 改动代码必须通过 `bash scripts/verify_committed.sh`。若另外跑了 `verify_all.ps1`，写明哪些组是 SKIP，不要写成全绿。
 - 涉及数据/训练语义的改动，同时在 `决策记录.md` 追加条目（决策/依据/证据/未决影响四列）；
 - 涉及评测指标的改动，需先修订 `M3_MPC_EVALUATION_DESIGN.md`（预注册设计）再改代码。
 

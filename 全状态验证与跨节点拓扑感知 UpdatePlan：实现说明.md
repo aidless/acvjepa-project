@@ -68,7 +68,7 @@ module.update_ema_target()
 ### 2.4 运行方法与通过条件
 
 ```bash
-cd /home/ubuntu/lecun_analysis
+# From the repository root.
 torchrun --standalone --nproc_per_node=2 test_dynamic_nccl_full_state_equivalence.py
 ```
 

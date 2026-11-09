@@ -72,7 +72,7 @@ ChaosScenario (seed, fault, dry_run, isolated environment)
 运行：
 
 ```bash
-cd /home/ubuntu/lecun_analysis
+# From the repository root.
 python3 heterogeneous_microbatch_chaos_framework.py
 ```
 

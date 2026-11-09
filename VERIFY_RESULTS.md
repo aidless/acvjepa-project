@@ -1,4 +1,14 @@
-# VERIFY_RESULTS — 接管验证结果（2026-08-15，最终全绿 59/59）
+# VERIFY_RESULTS
+
+Current fresh-clone contract: `bash scripts/verify_committed.sh`.
+
+That command runs `scripts/check_verification_drift.py` and then `scripts/run_offline_chaos_contract.sh`. It does not download weights, start Docker, or require a GPU. The inventory it checks is `verification_manifest.json`. A SKIP inside `verify_all.ps1` is not a pass. This file does not report a new pass count for the historical host log.
+
+<!-- historical-log -->
+
+# Historical host log (2026-08-15)
+
+The table below is the log from one Windows laptop that had weights, CUDA, and Docker. It was not re-run for the 2026-11-09 honesty pass. Do not read it as the result of a fresh clone.
 
 > 由 `verify_all.ps1` 生成；重跑命令：`.\verify_all.ps1`（幂等，产物在 `verify_artifacts/`）。
 > 环境：Windows 11 沙箱 · Python 3.12.7 · torch 2.5.1+cu121（RTX 3060 Laptop 6GB）· Docker 29.6.2。
@@ -55,7 +65,7 @@ ddp.make_demo_data、docker.compose_config、**docker.local_chaos_demo（build�
 
 | 文件 | 改动 | 原因 |
 |---|---|---|
-| elastic_data_cursor_ledger.py | `_local_path_from_uri` 用 urlparse 解析 `file://` | Windows 下 `file:///F:/...` 剥前缀得 `/F:/...` → 非法路径 `\\F:\...` |
+| elastic_data_cursor_ledger.py | `_local_path_from_uri` 用 urlparse 解析 `file://` | Windows 下 `file:///<drive>:/...` 剥前缀得 `/<drive>:/...` → 非法路径 `\\<drive>:\...` |
 | multimodal_hitl_tamper_evident_ledger.py | 同上（verify_local_artifacts） | 同上 |
 | generate_pointcloud_pairs_ddp.py | 新增 `_local_uri_root()` 统一解析（2 处） | 同上 |
 | heterogeneous_microbatch_chaos_framework.py | 4 场景补 `ledger.close()`；TemporaryDirectory 加 ignore_cleanup_errors | Windows 下 SQLite 文件锁导致临时目录清理失败 |

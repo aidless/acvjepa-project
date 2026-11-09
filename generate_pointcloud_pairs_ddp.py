@@ -153,7 +153,7 @@ class ObjectStoreSynchronizer:
     def _local_uri_root(self) -> Path:
         parsed = urlparse(self.remote_uri)
         path = unquote(parsed.path)
-        # Windows: file:///F:/... -> /F:/... ; strip the leading slash so Path
+        # Windows: file:///<drive>:/... -> /<drive>:/... ; strip the leading slash so Path
         # does not interpret it as rooted on the current drive.
         if os.name == "nt" and len(path) >= 3 and path[0] == "/" and path[2] == ":":
             path = path[1:]
