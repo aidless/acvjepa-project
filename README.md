@@ -49,6 +49,77 @@ python make_demo_ddp_data.py --root verify_artifacts/demo_ddp_data
 python scripts/manual_gloo_runner.py test_dynamic_nccl_full_state_equivalence.py
 ```
 
+Quickstart 冒烟实测（2026-11-10，Linux · Python 3.12，真实输出节选）：
+
+```text
+$ python3 validate_monitoring_config.py
+{"smoke_test":"passed","alerts":18,"recording_rules":10,"dashboard_panels":19}
+
+$ python3 ac_vjepa_core.py
+{'device': 'cuda', 'training_loss': 1.56018, 'normal_mode': 'normal',
+ 'fallback_mode': 'llm_supervision', 'latency': {'count': 2.0, 'p50_ms': 5.2504,
+ 'p95_ms': 7.9656, 'p99_ms': 8.2070}}
+```
+
+## 架构总览
+
+LLM × JEPA 混合智能体的核心架构（源图 `hybrid_agent_architecture.mmd`，同内容内嵌如下）：
+
+```mermaid
+flowchart LR
+    U[用户目标与约束] --> L[语言模型 理解、知识、高层分解]
+    S[相机、触觉、状态传感器] --> E[感知编码器 多模态状态估计]
+    E --> W[动作条件世界模型 预测后果与不确定性]
+    L --> P[规划、搜索与验证器 生成并校验候选方案]
+    W --> P
+    P --> C[控制器 安全约束下执行]
+    C --> A[现实环境]
+    A --> S
+    A --> R[任务结果与反馈]
+    R --> L
+
+    classDef lang fill:#0B3C5D,stroke:#0B3C5D,color:#FFFFFF;
+    classDef world fill:#14B8A6,stroke:#0F766E,color:#FFFFFF;
+    classDef exec fill:#F59E0B,stroke:#B45309,color:#1F2937;
+    classDef env fill:#E5E7EB,stroke:#6B7280,color:#1F2937;
+    class L lang;
+    class E,W world;
+    class P,C exec;
+    class U,S,A,R env;
+```
+
+## Results（已跑实验与验证数字）
+
+以下数字全部取自仓库内落盘证据（`VERIFY_RESULTS.md`、`experiments/`、`实验记录与负结果报告_2026-08-17.md`），无编造。
+
+### 预注册实验（H-T2 / H-T4 / H-D1，合成数据级，均为负结果）
+
+| 假设 | 预注册判据 | 实测 | 判定 | 证据 |
+|---|---|---|---|---|
+| H-T2 投影头容量 | 饱和点 <768：边际收益比 <0.2 且 d<0.2 | w32=-3.505 / w64=-3.300 / w128=-2.719 / w256=-1.732；比率 **4.80**、d=**9.9** | **refuted**（方向反转：窄头更优） | `experiments/ht2_ht4_2026-08-16/` |
+| H-T4 EMA 无收益 | \|Δ\|<5% 且 CI 不含实际差异 | ema=-3.300 vs sync=0.204，\|Δ\|=**1715%** | **refuted**（EMA 收益巨大，冻结骨干配置下同步目标训练崩溃） | 同上 |
+| H-D1 失败轨迹价值 | 配对 p<0.05 且 h>0.3（失败注入更优） | 全成功 0.05 vs 失败注入 0.05，p=**1.0**、h=**0.0** | **refuted**（合成链路级地板效应，两模型成功率均 5%） | `experiments/hd1_2026-08-17/` |
+
+### 工程链路验证（2026-08-15 接管验证，全绿 59/59）
+
+| 验证组 | 结果 | 关键数字 |
+|---|---|---|
+| 单元测试 | 5/5 PASS | 21 用例（含 5 故障注入场景断言） |
+| 独立冒烟 | 22/22 PASS | chaos framework 5 场景/17 断言；缓存 32→1 durable 读、16 writer→1 CAS |
+| 配置校验 | 6/6 PASS | 18 alerts / 10 rules / 19 panels |
+| Gloo 双进程语义回归 | 4/4 PASS | 118 cross-rank + 118 reference tensor 条目等价 |
+| 容器与契约 | 3/3 PASS | 3 容器 Healthy 全流程实测 |
+| P1/P2 CUDA 微型训练 | PASS | 冻结骨干峰值 **510.8MB**；动作条件峰值 **567.2MB** |
+| M3 评测骨架（mock 链路） | 全通 | A 0.000 / B 0.033 / C 1.000 |
+
+完整明细见 `VERIFY_RESULTS.md`；数据装配与训练配置（600 窗口/数据集、P2 20 epochs、batch 4×4、latent 128）见 `实验记录与负结果报告_2026-08-17.md`。
+
+## What this doesn't claim / Limits
+
+- **离线研究工件**：不含真实网络扰动、机器人控制或云端操作；合成数据仅用于链路验证，三条预注册负结果均为**合成数据级**结论，对真实数据的迁移性未验证。
+- **核心裁决目标仍卡在真实数据**（2026-08-17 现状评审）：H-D1 的地板效应说明当前评测强度不足，不构成「失败轨迹无价值」的证据。
+- 官方 V-JEPA 2.1 权重不入库、不随仓库分发；`verify_all.ps1` 的权重相关组在权重缺失时 SKIP。
+
 ## 权重（A 层，官方 V-JEPA 2.1 ViT-B 80M）
 
 仓库不包含预训练权重。按 `DATA_MANIFEST.md` 的登记：
