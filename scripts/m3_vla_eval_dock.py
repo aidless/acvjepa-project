@@ -20,10 +20,9 @@ RoboCasa（待首复现），M3 评测包可注册为其「模型服务器（三
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import numpy as np
 

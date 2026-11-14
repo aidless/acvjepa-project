@@ -27,7 +27,7 @@ import sqlite3
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Sequence
+from typing import Any, Dict, Mapping, Sequence
 from urllib.parse import unquote, urlparse
 
 from cryptography.hazmat.primitives import serialization

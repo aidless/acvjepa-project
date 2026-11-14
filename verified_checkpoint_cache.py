@@ -20,7 +20,7 @@ import hashlib
 import json
 import time
 from dataclasses import asdict, dataclass
-from typing import Dict, Iterable, Mapping, Sequence
+from typing import Mapping
 
 
 class CacheContractError(RuntimeError):

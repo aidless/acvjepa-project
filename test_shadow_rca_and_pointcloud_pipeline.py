@@ -10,7 +10,6 @@ import numpy as np
 from shadow_degradation_rca import (
     RootCause,
     ShadowDegradationAnalyzer,
-    ShadowTelemetry,
     demo_records,
 )
 from sim2real_pointcloud_video_pipeline import (

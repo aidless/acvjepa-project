@@ -17,7 +17,7 @@ from concurrent.futures import Future, ThreadPoolExecutor, TimeoutError
 from dataclasses import dataclass, field, replace
 from enum import Enum
 from threading import Lock
-from typing import Any, Deque, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Deque, Dict, Optional, Tuple
 from uuid import uuid4
 
 import torch

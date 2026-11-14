@@ -30,7 +30,7 @@ import copy
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import torch
 import torch.nn as nn
@@ -159,7 +159,7 @@ def load_vjepa2_weights(
 
 def _count_blocks(module: nn.Module) -> int:
     n = 0
-    while hasattr(module, f"blocks") and n < 64:
+    while hasattr(module, "blocks") and n < 64:
         try:
             _ = module.blocks[n]
             n += 1

@@ -32,12 +32,10 @@ from __future__ import annotations
 import argparse
 import json
 from contextlib import nullcontext
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import torch
-import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 from ac_vjepa_core import ActionConditionedVJEPA, action_conditioned_jepa_loss
@@ -49,7 +47,6 @@ from train_ac_vjepa_ddp import (
     cleanup_distributed,
     is_primary,
     move_batch,
-    rank,
     reduce_mean,
     save_checkpoint,
     set_seed,

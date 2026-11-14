@@ -11,8 +11,8 @@ Run:
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
-from typing import Dict, Iterable, List, Mapping, Tuple
+from dataclasses import asdict, dataclass
+from typing import Dict, List, Mapping, Tuple
 
 from shadow_degradation_rca import RCAReport, RootCause, Severity, ShadowDegradationAnalyzer, demo_records
 

@@ -23,9 +23,7 @@ IMPORTANT scope boundary (same rule as IsaacLabAdapter):
 from __future__ import annotations
 
 import json
-from typing import Any, Dict
 
-import numpy as np
 
 from sim2real_pointcloud_video_pipeline import (
     CameraCalibration,
@@ -143,7 +141,7 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
 
-    from sim2real_pointcloud_video_pipeline import EpisodeWriter, quality_gate
+    from sim2real_pointcloud_video_pipeline import EpisodeWriter
 
     request = demo_robocasa_job()
     adapter = RoboCasaAdapter(frames=8, height=96, width=128)

@@ -27,13 +27,12 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import numpy as np
 import torch
 from PIL import Image
 
-from train_ac_vjepa_ddp import REQUIRED_KEYS
 
 
 def load_frames(clip_dir: Path, height: int, width: int) -> np.ndarray:

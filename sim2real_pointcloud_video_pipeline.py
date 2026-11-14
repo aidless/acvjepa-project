@@ -23,7 +23,7 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Sequence
+from typing import Any, Dict, List, Mapping
 from uuid import uuid4
 
 import numpy as np

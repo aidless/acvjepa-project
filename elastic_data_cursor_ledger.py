@@ -24,7 +24,7 @@ import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from urllib.parse import unquote, urlparse
-from typing import Dict, Iterable, Mapping, Sequence, Tuple
+from typing import Mapping, Sequence, Tuple
 from uuid import uuid4
 
 

@@ -1,15 +1,13 @@
 """Offline contract tests for resumable jobs and dataset-commit training conversion."""
 from __future__ import annotations
 
-import json
 import tempfile
 import time
 import unittest
 from pathlib import Path
 
-import numpy as np
 
-from dataset_commit_to_acvjepa_windows import convert_episode, sha256
+from dataset_commit_to_acvjepa_windows import convert_episode
 from resumable_simjob_ledger import LeaseLedger
 from sim2real_pointcloud_video_pipeline import EpisodeWriter, SyntheticDeformableBackend, demo_job
 

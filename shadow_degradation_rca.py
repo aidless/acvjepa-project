@@ -15,7 +15,7 @@ from collections import defaultdict
 from dataclasses import asdict, dataclass
 from enum import Enum
 from statistics import mean
-from typing import Dict, Iterable, List, Sequence
+from typing import Dict, List, Sequence
 
 
 class Severity(str, Enum):

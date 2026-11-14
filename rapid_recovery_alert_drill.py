@@ -22,7 +22,7 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import Dict, Iterable, Mapping, Sequence
+from typing import Iterable, Mapping, Sequence
 
 from distributed_training_observability import DistributedTrainingMetrics, TrainingMetricLabels
 

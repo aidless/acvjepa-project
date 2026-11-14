@@ -24,7 +24,7 @@ import os
 from contextlib import nullcontext
 from dataclasses import asdict, dataclass
 from datetime import timedelta
-from typing import Callable, Dict, Iterable, Iterator, List, Mapping, Sequence
+from typing import Dict, Iterator, List, Mapping
 
 import torch
 import torch.distributed as dist

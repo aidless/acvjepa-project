@@ -16,7 +16,7 @@ import json
 import random
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Sequence
+from typing import Any, Dict, Iterable, List, Sequence
 from uuid import uuid4
 
 

@@ -9,7 +9,6 @@ collective ordering and variable-local-accumulation semantics in this CPU CI tes
 from __future__ import annotations
 
 import json
-import os
 from datetime import timedelta
 from typing import Dict, Iterator
 
