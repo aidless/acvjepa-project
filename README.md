@@ -216,3 +216,24 @@ GitHub's license detector reports this repository as `NOASSERTION` because it re
 a single SPDX id per repository and this one carries two. The split is deliberate:
 the code stays permissively licensed so it can be reused, and the research material
 stays attributable so a citation is required.
+
+## 验收题库与复算
+
+`eval/cases.jsonl` 是 20 条可执行验收题，覆盖本仓七个模块/数据面的关键口径（动态梯度累积计划与 DDP 损失缩放、
+checkpoint 内容寻址与契约校验、分片并行加载计划、缓存装载削峰（single-flight / negative cache / AIMD 预算）、
+shadow-canary 延迟分位、恢复-发布仲裁的 epoch 状态与 generation fencing、DR 权重归一、
+重试退避、以及 `experiments/` 落盘结果的解析）。大部分题目的期望值不是抄文档，而是**调用模块现算**或
+**真读本仓数据文件**：
+
+```bash
+python3 eval/run_cases.py            # 20/20 cases passed
+python3 eval/run_cases.py --save     # 顺带把结果写进 eval/run-report.json
+python3 eval/run_cases.py --selftest # 篡改一条期望值，必须变红（证明这套题会失败）
+```
+
+**数字如何复算**：`eval/run-report.json` 里每条 case 都带 `id` / `axis` / `detail`，
+把 `detail` 与 `cases.jsonl` 的 `verify` 代码一起看，就能从源码复现该数字；
+`--save` 重跑一次即可重建整份报告，不需要手工抄数。
+
+**失败归因**：`run_cases.py` 不只报通过率，失败时按 `axis` 汇总（例如
+`checkpoint_cache/plan: 1 条 —— CC-03`），直接指出是哪个模块的哪个口径坏了。

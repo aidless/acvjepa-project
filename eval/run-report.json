@@ -1,0 +1,129 @@
+{
+ "total": 20,
+ "passed": 20,
+ "failed": 0,
+ "selftest": false,
+ "failed_by_axis": {},
+ "results": [
+  {
+   "id": "AD-01",
+   "axis": "adaptive_ddp/planner",
+   "ok": true,
+   "detail": "62"
+  },
+  {
+   "id": "AD-02",
+   "axis": "adaptive_ddp/loss_scale",
+   "ok": true,
+   "detail": "0.03225806451612903"
+  },
+  {
+   "id": "AD-03",
+   "axis": "adaptive_ddp/raises",
+   "ok": true,
+   "detail": "raised RuntimeError"
+  },
+  {
+   "id": "CC-01",
+   "axis": "checkpoint_cache/shard_key",
+   "ok": true,
+   "detail": "model:shard-0:68293acade8473c526a5623f090759c0c8c1ac3d7e65ff1ad22232288423977e"
+  },
+  {
+   "id": "CC-02",
+   "axis": "checkpoint_cache/raises",
+   "ok": true,
+   "detail": "raised CacheContractError"
+  },
+  {
+   "id": "CC-03",
+   "axis": "checkpoint_cache/plan",
+   "ok": true,
+   "detail": "0,1,0,1,0"
+  },
+  {
+   "id": "LS-01",
+   "axis": "load_shedding/stampede",
+   "ok": true,
+   "detail": "7"
+  },
+  {
+   "id": "LS-02",
+   "axis": "load_shedding/negative_cache",
+   "ok": true,
+   "detail": "3"
+  },
+  {
+   "id": "LS-03",
+   "axis": "load_shedding/budget",
+   "ok": true,
+   "detail": "4"
+  },
+  {
+   "id": "SG-01",
+   "axis": "shadow_gate/percentile",
+   "ok": true,
+   "detail": "29.799999999999997"
+  },
+  {
+   "id": "AR-01",
+   "axis": "arbiter/state",
+   "ok": true,
+   "detail": "RECOVERING"
+  },
+  {
+   "id": "AR-02",
+   "axis": "arbiter/raises",
+   "ok": true,
+   "detail": "raised ArbitrationError"
+  },
+  {
+   "id": "DR-01",
+   "axis": "dr_policy/weights",
+   "ok": true,
+   "detail": "0.25"
+  },
+  {
+   "id": "DR-02",
+   "axis": "dr_policy/raises",
+   "ok": true,
+   "detail": "raised ValueError"
+  },
+  {
+   "id": "RS-01",
+   "axis": "resumable/retry",
+   "ok": true,
+   "detail": "raised ValueError"
+  },
+  {
+   "id": "DT-01",
+   "axis": "experiments/p2_chain",
+   "ok": true,
+   "detail": "15"
+  },
+  {
+   "id": "DT-02",
+   "axis": "experiments/hd1",
+   "ok": true,
+   "detail": "false"
+  },
+  {
+   "id": "DOC-01",
+   "axis": "docs/readme",
+   "ok": true,
+   "detail": "## 验收题库与复算"
+  },
+  {
+   "id": "DOC-02",
+   "axis": "docs/verify_results",
+   "ok": true,
+   "detail": "59/59 PASS（全绿）"
+  },
+  {
+   "id": "DOC-03",
+   "axis": "docs/blueprint",
+   "ok": true,
+   "detail": "## §7 附录"
+  }
+ ]
+}
